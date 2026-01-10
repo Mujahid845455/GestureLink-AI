@@ -219,7 +219,7 @@ function Login() {
 
         {/* Right Panel - Login Form */}
         <div className="lg:col-span-5 flex items-center justify-center">
-          <div className="w-full max-w-[440px] bg-white/5 backdrop-blur-2xl rounded-[2.5rem] border border-white/10 shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] p-10 lg:p-12 relative overflow-hidden">
+          <div className="w-full max-w-[640px] bg-white/5 backdrop-blur-2xl rounded-[2.5rem] border border-white/10 shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] p-10 lg:p-12 relative overflow-hidden">
             {/* Form Background Glow */}
             <div className="absolute -top-20 -right-20 w-40 h-40 bg-cyan-500/10 rounded-full blur-3xl"></div>
             <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl"></div>
