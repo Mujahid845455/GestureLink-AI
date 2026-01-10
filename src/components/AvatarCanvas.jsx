@@ -2357,7 +2357,7 @@
 //   const restPose = useRef({});
 //   const prevAngles = useRef({});
 //   const filteredLandmarks = useRef(createFilteredLandmarks());
-
+  
 //   // Walk state
 //   const prevLeftAnkleY = useRef(null);
 //   const prevRightAnkleY = useRef(null);
@@ -2955,7 +2955,7 @@
 //       if (bone.isBone) {
 //         // Store rest pose
 //         restPose.current[bone.name] = bone.quaternion.clone();
-
+        
 //         // Initialize smoothing states
 //         smoothing.current[bone.name] = {
 //           position: bone.position.clone(),
@@ -3096,7 +3096,7 @@
 //     // ============================================
 //     // 🎯 ARMS - ULTRA STABLE IK SOLVER
 //     // ============================================
-
+    
 //     // Initialize arm target storage
 //     if (!window._armTargets) {
 //       window._armTargets = {
@@ -3447,9 +3447,9 @@
 //       <directionalLight position={[5, 10, 7]} intensity={1.2} />
 //       <directionalLight position={[-5, 5, -7]} intensity={0.6} />
 //       <Environment preset="city" />
-
+      
 //       <AvatarModel landmarks={landmarks} />
-
+      
 //       <OrbitControls target={[0, 1, 0]} />
 //     </Canvas>
 //   );
@@ -3539,7 +3539,7 @@
 //       if (bone.isBone) {
 //         // Store rest pose
 //         restPose.current[bone.name] = bone.quaternion.clone();
-
+        
 //         // Initialize smoothing states
 //         smoothing.current[bone.name] = {
 //           position: bone.position.clone(),
@@ -3672,24 +3672,24 @@
 //       middleBase.y - wrist.y,
 //       middleBase.z - wrist.z
 //     ).normalize();
-
+    
 //     // Right: pinky → index
 //     const right = new THREE.Vector3(
 //       indexBase.x - pinkyBase.x,
 //       indexBase.y - pinkyBase.y,
 //       indexBase.z - pinkyBase.z
 //     ).normalize();
-
+    
 //     // Up: cross product
 //     const up = new THREE.Vector3().crossVectors(forward, right).normalize();
-
+    
 //     // Re-orthogonalize right
 //     const rightOrtho = new THREE.Vector3().crossVectors(up, forward).normalize();
-
+    
 //     // Create rotation matrix
 //     const matrix = new THREE.Matrix4();
 //     matrix.makeBasis(rightOrtho, up, forward);
-
+    
 //     return new THREE.Quaternion().setFromRotationMatrix(matrix);
 //   };
 
@@ -3712,7 +3712,7 @@
 //     // ============================================
 //     // 🎯 ARMS - ULTRA STABLE IK SOLVER
 //     // ============================================
-
+    
 //     // Initialize arm target storage
 //     if (!window._armTargets) {
 //       window._armTargets = {
@@ -3779,12 +3779,12 @@
 //       const indexBase = mpCoord(rightHand[5]);
 //       const middleBase = mpCoord(rightHand[9]);
 //       const pinkyBase = mpCoord(rightHand[17]);
-
+      
 //       const handBone = nodes.mixamorigRightHand;
-
+      
 //       if (handBone && wrist && indexBase && middleBase && pinkyBase) {
 //         const targetQuat = getHandRotation(wrist, indexBase, middleBase, pinkyBase);
-
+        
 //         // Check for quaternion flip
 //         const prevQuat = handSmoothing.current.rightQuat;
 //         if (prevQuat.dot(targetQuat) < HAND_FLIP_THRESHOLD) {
@@ -3793,10 +3793,10 @@
 //           targetQuat.z = -targetQuat.z;
 //           targetQuat.w = -targetQuat.w;
 //         }
-
+        
 //         // Ultra-smooth interpolation
 //         handSmoothing.current.rightQuat.slerp(targetQuat, HAND_SMOOTHING);
-
+        
 //         // Apply to bone with rest pose
 //         const restQuat = restPose.current["mixamorigRightHand"];
 //         if (restQuat) {
@@ -3811,19 +3811,19 @@
 //       const indexBase = mpCoord(leftHand[5]);
 //       const middleBase = mpCoord(leftHand[9]);
 //       const pinkyBase = mpCoord(leftHand[17]);
-
+      
 //       const handBone = nodes.mixamorigLeftHand;
-
+      
 //       if (handBone && wrist && indexBase && middleBase && pinkyBase) {
 //         let targetQuat = getHandRotation(wrist, indexBase, middleBase, pinkyBase);
-
+        
 //         // Mirror for left hand
 //         const mirrorQuat = new THREE.Quaternion().setFromAxisAngle(
 //           new THREE.Vector3(0, 1, 0),
 //           Math.PI
 //         );
 //         targetQuat.multiply(mirrorQuat);
-
+        
 //         // Check for flip
 //         const prevQuat = handSmoothing.current.leftQuat;
 //         if (prevQuat.dot(targetQuat) < HAND_FLIP_THRESHOLD) {
@@ -3832,10 +3832,10 @@
 //           targetQuat.z = -targetQuat.z;
 //           targetQuat.w = -targetQuat.w;
 //         }
-
+        
 //         // Ultra-smooth interpolation
 //         handSmoothing.current.leftQuat.slerp(targetQuat, HAND_SMOOTHING);
-
+        
 //         // Apply to bone with rest pose
 //         const restQuat = restPose.current["mixamorigLeftHand"];
 //         if (restQuat) {
@@ -4138,9 +4138,9 @@
 //       <directionalLight position={[5, 10, 7]} intensity={1.2} />
 //       <directionalLight position={[-5, 5, -7]} intensity={0.6} />
 //       <Environment preset="city" />
-
+      
 //       <AvatarModel landmarks={landmarks} />
-
+      
 //       <OrbitControls target={[0, 1, 0]} />
 //     </Canvas>
 //   );
@@ -4167,17 +4167,17 @@
 // function AvatarModel({ landmarks }) {
 //   const { scene, nodes } = useGLTF("/models/standing.glb");
 //   const groupRef = useRef();
-
+  
 //   // ============================================
 //   // STATE
 //   // ============================================
 //   const restPose = useRef({});
 //   const smoothing = useRef({});
 //   const filteredLandmarks = useRef(createFilteredLandmarks());
-
+  
 //   // Store previous positions for smoothing
 //   const prevPositions = useRef({});
-
+  
 //   // ============================================
 //   // CONSTANTS
 //   // ============================================
@@ -4256,25 +4256,25 @@
 //     // Spine
 //     'mixamorigHips': { type: 'position', index: [23, 24] }, // Average of both hips
 //     'mixamorigSpine': { type: 'rotation', index: [11, 12, 23, 24] }, // Between shoulders and hips
-
+    
 //     // Left Arm
 //     'mixamorigLeftShoulder': { type: 'rotation', index: [11, 13] },
 //     'mixamorigLeftArm': { type: 'rotation', index: [11, 13] },
 //     'mixamorigLeftForeArm': { type: 'rotation', index: [13, 15] },
-
+    
 //     // Right Arm
 //     'mixamorigRightShoulder': { type: 'rotation', index: [12, 14] },
 //     'mixamorigRightArm': { type: 'rotation', index: [12, 14] },
 //     'mixamorigRightForeArm': { type: 'rotation', index: [14, 16] },
-
+    
 //     // Left Leg
 //     'mixamorigLeftUpLeg': { type: 'rotation', index: [23, 25] },
 //     'mixamorigLeftLeg': { type: 'rotation', index: [25, 27] },
-
+    
 //     // Right Leg
 //     'mixamorigRightUpLeg': { type: 'rotation', index: [24, 26] },
 //     'mixamorigRightLeg': { type: 'rotation', index: [26, 28] },
-
+    
 //     // Head
 //     'mixamorigNeck': { type: 'rotation', index: [11, 12, 0] },
 //     'mixamorigHead': { type: 'rotation', index: [7, 8] }, // Between ears
@@ -4317,23 +4317,23 @@
 //     // Get landmark points
 //     const point1 = mpCoord(landmarks[indices[0]]);
 //     const point2 = mpCoord(landmarks[indices[1]]);
-
+    
 //     // Calculate direction vector
 //     const direction = new THREE.Vector3(
 //       point2.x - point1.x,
 //       point2.y - point1.y,
 //       point2.z - point1.z
 //     ).normalize();
-
+    
 //     // Create target rotation
 //     const upVector = new THREE.Vector3(0, 1, 0);
 //     const targetQuat = new THREE.Quaternion().setFromUnitVectors(upVector, direction);
-
+    
 //     // Smooth rotation
 //     if (!smoothing.current[bone.name]) {
 //       smoothing.current[bone.name] = { quaternion: bone.quaternion.clone() };
 //     }
-
+    
 //     smoothing.current[bone.name].quaternion.slerp(targetQuat, SMOOTHING_FACTOR);
 //     bone.quaternion.copy(smoothing.current[bone.name].quaternion);
 //   };
@@ -4443,12 +4443,12 @@
 //     fingerConfigs.forEach(({ bone, base, tip }) => {
 //       const boneName = `mixamorig${isLeftHand ? 'Left' : 'Right'}Hand${bone}1`;
 //       const fingerBone = nodes[boneName];
-
+      
 //       if (fingerBone && handLandmarks[base] && handLandmarks[tip]) {
 //         // Calculate finger curl based on distance
 //         const baseCoord = mpCoord(handLandmarks[base]);
 //         const tipCoord = mpCoord(handLandmarks[tip]);
-
+        
 //         const distance = Math.sqrt(
 //           Math.pow(tipCoord.x - baseCoord.x, 2) +
 //           Math.pow(tipCoord.y - baseCoord.y, 2) +
@@ -4457,7 +4457,7 @@
 
 //         // Map distance to rotation (0 = straight, 1 = fully curled)
 //         const curl = THREE.MathUtils.mapLinear(distance, 0.05, 0.2, 0, 1.5);
-
+        
 //         // Apply rotation with smoothing
 //         fingerBone.rotation.x = smoothValue(
 //           fingerBone.rotation.x,
@@ -4474,7 +4474,7 @@
 //   useFrame(() => {
 //     // Apply Kalman filtering to landmarks
 //     const smoothedLandmarks = filteredLandmarks.current.update(landmarks);
-
+    
 //     if (!smoothedLandmarks?.pose) {
 //       // No pose data, return to rest pose
 //       scene.traverse((bone) => {
@@ -4505,12 +4505,12 @@
 //     if (poseArray.length >= 25 && nodes.mixamorigHips) {
 //       const leftHip = mpCoord(poseArray[23]);
 //       const rightHip = mpCoord(poseArray[24]);
-
+      
 //       // Calculate center point
 //       const centerX = (leftHip.x + rightHip.x) / 2;
 //       const centerY = (leftHip.y + rightHip.y) / 2 - 1; // Adjust height
 //       const centerZ = (leftHip.z + rightHip.z) / 2;
-
+      
 //       // Smoothly move hips to center
 //       nodes.mixamorigHips.position.lerp(
 //         new THREE.Vector3(centerX, Math.max(GROUND_Y, centerY), centerZ),
@@ -4557,20 +4557,20 @@
 //         groundColor="#888888"
 //         intensity={0.5}
 //       />
-
+      
 //       {/* Environment */}
 //       <Environment preset="studio" />
-
+      
 //       {/* Floor */}
 //       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 0]} receiveShadow>
 //         <planeGeometry args={[20, 20]} />
 //         <shadowMaterial opacity={0.3} />
 //         <meshStandardMaterial color="#333333" roughness={0.8} />
 //       </mesh>
-
+      
 //       {/* Avatar */}
 //       <AvatarModel landmarks={landmarks} />
-
+      
 //       {/* Camera Controls */}
 //       <OrbitControls 
 //         enablePan={true}
@@ -4581,10 +4581,10 @@
 //         maxDistance={10}
 //         maxPolarAngle={Math.PI / 2}
 //       />
-
+      
 //       {/* Grid Helper */}
 //       <gridHelper args={[20, 20, 0x444444, 0x888888]} />
-
+      
 //       {/* Axis Helper */}
 //       <axesHelper args={[2]} />
 //     </Canvas>
@@ -4615,22 +4615,22 @@
 //   const animationActions = useRef({});
 //   const currentAnimationRef = useRef("Idle");
 //   const idleTimeRef = useRef(0);
-
+  
 //   // Idle animations list (you can add more animations)
 //   const idleAnimations = ["Idle", "Neutral Idle", "Waving", "Walking"];
-
+  
 //   useEffect(() => {
 //     if (scene && animations.length > 0) {
 //       // Create animation mixer
 //       mixerRef.current = new THREE.AnimationMixer(scene);
-
+      
 //       // Setup all animations
 //       animations.forEach((clip) => {
 //         animationActions.current[clip.name] = mixerRef.current.clipAction(clip);
 //         animationActions.current[clip.name].clampWhenFinished = true;
 //         animationActions.current[clip.name].loop = THREE.LoopRepeat;
 //       });
-
+      
 //       // Start with Idle animation
 //       if (animationActions.current["Idle"]) {
 //         animationActions.current["Idle"].play();
@@ -4638,55 +4638,55 @@
 //         animationActions.current[animations[0].name].play();
 //         currentAnimationRef.current = animations[0].name;
 //       }
-
+      
 //       console.log(`🎭 Loaded ${animations.length} idle animations:`, animations.map(a => a.name));
 //     }
-
+    
 //     return () => {
 //       if (mixerRef.current) {
 //         mixerRef.current.stopAllAction();
 //       }
 //     };
 //   }, [scene, animations]);
-
+  
 //   // Animation frame update
 //   useFrame((state, delta) => {
 //     // Update animation mixer
 //     if (mixerRef.current) {
 //       mixerRef.current.update(delta);
 //     }
-
+    
 //     // Randomly switch animations every 10-20 seconds
 //     idleTimeRef.current += delta;
 //     if (idleTimeRef.current > 10 + Math.random() * 10) {
 //       idleTimeRef.current = 0;
 //       changeIdleAnimation();
 //     }
-
+    
 //     // Add subtle breathing motion
 //     if (groupRef.current) {
 //       const breath = Math.sin(state.clock.elapsedTime * 0.5) * 0.01;
 //       groupRef.current.position.y = breath;
 //     }
 //   });
-
+  
 //   const changeIdleAnimation = () => {
 //     if (!mixerRef.current || Object.keys(animationActions.current).length === 0) return;
-
+    
 //     const currentAction = animationActions.current[currentAnimationRef.current];
 //     if (currentAction) {
 //       currentAction.fadeOut(0.5);
 //     }
-
+    
 //     // Select random animation
 //     const availableAnimations = idleAnimations.filter(name => 
 //       animationActions.current[name] && name !== currentAnimationRef.current
 //     );
-
+    
 //     if (availableAnimations.length > 0) {
 //       const nextAnimation = availableAnimations[Math.floor(Math.random() * availableAnimations.length)];
 //       const nextAction = animationActions.current[nextAnimation];
-
+      
 //       if (nextAction) {
 //         nextAction.reset().fadeIn(0.5).play();
 //         currentAnimationRef.current = nextAnimation;
@@ -4694,7 +4694,7 @@
 //       }
 //     }
 //   };
-
+  
 //   return <primitive object={scene} ref={groupRef} scale={1.3} position={[0, 0, 0]} />;
 // }
 
@@ -4704,7 +4704,7 @@
 //  */
 // function LiveAvatar({ landmarks }) {
 //   const { scene, nodes } = useGLTF("/models/standing.glb");
-
+  
 //   // ============================================
 //   // STATE
 //   // ============================================
@@ -4713,7 +4713,7 @@
 //   const filteredLandmarks = useRef(createFilteredLandmarks());
 //   const transitionProgress = useRef(0);
 //   const isTransitioning = useRef(false);
-
+  
 //   // ============================================
 //   // INITIALIZATION
 //   // ============================================
@@ -4727,14 +4727,14 @@
 //         };
 //       }
 //     });
-
+    
 //     // Start transition from idle to live
 //     isTransitioning.current = true;
 //     transitionProgress.current = 0;
-
+    
 //     console.log("🚀 Live tracking initialized");
 //   }, [scene]);
-
+  
 //   // ============================================
 //   // HELPER FUNCTIONS
 //   // ============================================
@@ -4743,34 +4743,34 @@
 //     y: -(landmark.y - 0.5) * 2,
 //     z: -landmark.z * 2,
 //   });
-
+  
 //   const smoothValue = (current, target, factor = 0.2) => {
 //     return current + (target - current) * factor;
 //   };
-
+  
 //   // ============================================
 //   // POSE PROCESSING
 //   // ============================================
 //   const processPose = (pose) => {
 //     if (!pose || !nodes) return;
-
+    
 //     // Head rotation
 //     if (pose.LEFT_EAR && pose.RIGHT_EAR && nodes.mixamorigHead) {
 //       const leftEar = mpCoord(pose.LEFT_EAR);
 //       const rightEar = mpCoord(pose.RIGHT_EAR);
 //       const headTilt = Math.atan2(rightEar.y - leftEar.y, rightEar.x - leftEar.x);
-
+      
 //       const targetQuat = new THREE.Quaternion().setFromEuler(
 //         new THREE.Euler(0, 0, headTilt * 0.3)
 //       );
-
+      
 //       nodes.mixamorigHead.quaternion.slerp(targetQuat, 0.1);
 //     }
-
+    
 //     // Arms
 //     processArm("Left", pose);
 //     processArm("Right", pose);
-
+    
 //     // Spine
 //     if (pose.LEFT_SHOULDER && pose.RIGHT_SHOULDER && nodes.mixamorigSpine) {
 //       const leftShoulder = mpCoord(pose.LEFT_SHOULDER);
@@ -4779,7 +4779,7 @@
 //         rightShoulder.y - leftShoulder.y,
 //         rightShoulder.x - leftShoulder.x
 //       );
-
+      
 //       nodes.mixamorigSpine.rotation.z = smoothValue(
 //         nodes.mixamorigSpine.rotation.z,
 //         spineRotation * 0.2,
@@ -4787,22 +4787,22 @@
 //       );
 //     }
 //   };
-
+  
 //   const processArm = (side, pose) => {
 //     const shoulderKey = `${side.toUpperCase()}_SHOULDER`;
 //     const elbowKey = `${side.toUpperCase()}_ELBOW`;
 //     const wristKey = `${side.toUpperCase()}_WRIST`;
-
+    
 //     if (pose[shoulderKey] && pose[elbowKey] && pose[wristKey]) {
 //       const shoulder = mpCoord(pose[shoulderKey]);
 //       const elbow = mpCoord(pose[elbowKey]);
 //       const wrist = mpCoord(pose[wristKey]);
-
+      
 //       // Calculate arm angles
 //       const upperArmBone = nodes[`mixamorig${side}Arm`];
 //       const forearmBone = nodes[`mixamorig${side}ForeArm`];
 //       const handBone = nodes[`mixamorig${side}Hand`];
-
+      
 //       if (upperArmBone && forearmBone && handBone) {
 //         // Solve IK for arm
 //         solveTwoBoneIK({
@@ -4815,7 +4815,7 @@
 //       }
 //     }
 //   };
-
+  
 //   // ============================================
 //   // ANIMATION FRAME
 //   // ============================================
@@ -4827,43 +4827,43 @@
 //         isTransitioning.current = false;
 //       }
 //     }
-
+    
 //     // Process landmarks
 //     const smoothedLandmarks = filteredLandmarks.current.update(landmarks);
 //     if (smoothedLandmarks?.pose) {
 //       processPose(smoothedLandmarks.pose);
-
+      
 //       // Process hands
 //       processHand(smoothedLandmarks.left_hand, "Left");
 //       processHand(smoothedLandmarks.right_hand, "Right");
 //     }
 //   });
-
+  
 //   const processHand = (handLandmarks, side) => {
 //     if (!handLandmarks || Object.keys(handLandmarks).length < 21) return;
-
+    
 //     const handBone = nodes[`mixamorig${side}Hand`];
 //     if (!handBone) return;
-
+    
 //     // Simple finger curl based on landmark distances
 //     const fingerTips = [4, 8, 12, 16, 20]; // Thumb, Index, Middle, Ring, Pinky tips
-
+    
 //     fingerTips.forEach((tipIndex, fingerIndex) => {
 //       const baseIndex = tipIndex - 2; // Approximate base joint
 //       if (handLandmarks[baseIndex] && handLandmarks[tipIndex]) {
 //         const base = handLandmarks[baseIndex];
 //         const tip = handLandmarks[tipIndex];
-
+        
 //         // Calculate distance for curl
 //         const dist = Math.sqrt(
 //           Math.pow(tip.x - base.x, 2) +
 //           Math.pow(tip.y - base.y, 2) +
 //           Math.pow(tip.z - base.z, 2)
 //         );
-
+        
 //         // Map distance to finger curl
 //         const curl = THREE.MathUtils.mapLinear(dist, 0.05, 0.2, 1.5, 0);
-
+        
 //         // Apply to finger bones
 //         const fingerBone = nodes[`mixamorig${side}Hand${["Thumb", "Index", "Middle", "Ring", "Pinky"][fingerIndex]}1`];
 //         if (fingerBone) {
@@ -4876,7 +4876,7 @@
 //       }
 //     });
 //   };
-
+  
 //   return <primitive object={scene} scale={1.3} position={[0, 0, 0]} />;
 // }
 
@@ -4888,7 +4888,7 @@
 //   const [connectionStatus, setConnectionStatus] = useState("connecting");
 //   const [showControls, setShowControls] = useState(true);
 //   const cameraRef = useRef();
-
+  
 //   // Monitor connection status
 //   useEffect(() => {
 //     if (landmarks) {
@@ -4897,7 +4897,7 @@
 //       setConnectionStatus("disconnected");
 //     }
 //   }, [landmarks]);
-
+  
 //   return (
 //     <>
 //       {/* Connection Status Overlay */}
@@ -4936,7 +4936,7 @@
 //           </div>
 //         )}
 //       </div>
-
+      
 //       {/* Toggle Controls Button */}
 //       <button
 //         onClick={() => setShowControls(!showControls)}
@@ -4956,7 +4956,7 @@
 //       >
 //         {showControls ? 'Hide Controls' : 'Show Controls'}
 //       </button>
-
+      
 //       {/* Main Canvas */}
 //       <Canvas 
 //         camera={{ 
@@ -4985,27 +4985,27 @@
 //           groundColor="#888888"
 //           intensity={0.5}
 //         />
-
+        
 //         {/* Environment */}
 //         <Environment preset="city" />
-
+        
 //         {/* Floor */}
 //         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 0]} receiveShadow>
 //           <planeGeometry args={[20, 20]} />
 //           <shadowMaterial opacity={0.3} />
 //           <meshStandardMaterial color="#333333" roughness={0.8} />
 //         </mesh>
-
+        
 //         {/* Grid Helper */}
 //         <gridHelper args={[20, 20, 0x444444, 0x888888]} />
-
+        
 //         {/* Avatar - Switches between idle and live */}
 //         {landmarks ? (
 //           <LiveAvatar landmarks={landmarks} />
 //         ) : (
 //           <IdleAvatar />
 //         )}
-
+        
 //         {/* Camera Controls */}
 //         {showControls && (
 //           <OrbitControls 
@@ -5018,11 +5018,11 @@
 //             maxPolarAngle={Math.PI / 2}
 //           />
 //         )}
-
+        
 //         {/* Axis Helper */}
 //         <axesHelper args={[2]} />
 //       </Canvas>
-
+      
 //       {/* Instructions Overlay */}
 //       <div style={{
 //         position: 'absolute',
@@ -5074,16 +5074,16 @@
 //   const [mixer, setMixer] = useState(null);
 //   const [loading, setLoading] = useState(true);
 //   const [error, setError] = useState(null);
-
+  
 //   const groupRef = useRef();
 //   const animationRef = useRef({ time: 0 });
 //   const clockRef = useRef(new THREE.Clock(false));
-
+  
 //   // Helper function to create breathing animation
 //   const createBreathingAnimation = useCallback((targetModel, animationMixer) => {
 //     // Create a simple breathing animation
 //     const tracks = [];
-
+    
 //     // Add some subtle movement to root
 //     const positionTrack = new THREE.VectorKeyframeTrack(
 //       '.position[y]',
@@ -5091,78 +5091,78 @@
 //       [0, 0.02, 0]
 //     );
 //     tracks.push(positionTrack);
-
+    
 //     const rotationTrack = new THREE.VectorKeyframeTrack(
 //       '.rotation[y]',
 //       [0, 1, 2],
 //       [0, 0.01, 0]
 //     );
 //     tracks.push(rotationTrack);
-
+    
 //     const clip = new THREE.AnimationClip('breathing', 2, tracks);
 //     const action = animationMixer.clipAction(clip);
 //     action.loop = THREE.LoopRepeat;
 //     action.play();
-
+    
 //     return animationMixer;
 //   }, []);
-
+  
 //   // Helper function to extend short animations
 //   const extendAnimationClip = useCallback((clip) => {
 //     // Create a new longer animation by repeating the short one
 //     const newDuration = 3.0; // 3 seconds
-
+    
 //     // If it's a very short animation (like 1 frame), make it a hold pose
 //     if (clip.duration < 0.1) {
 //       console.log("📏 Very short animation detected, creating hold animation");
-
+      
 //       // Create a simple looping animation from scratch
 //       const newClip = new THREE.AnimationClip('extended_dance', newDuration, []);
-
+      
 //       // Add some basic movement tracks
 //       const positionTrack = new THREE.VectorKeyframeTrack(
 //         '.position[y]',
 //         [0, 1.5, 3.0],
 //         [0, 0.03, 0]
 //       );
-
+      
 //       const rotationTrack = new THREE.VectorKeyframeTrack(
 //         '.rotation[y]',
 //         [0, 1.5, 3.0],
 //         [0, 0.05, 0]
 //       );
-
+      
 //       newClip.tracks.push(positionTrack, rotationTrack);
 //       return newClip;
 //     }
-
+    
 //     // Otherwise, try to extend the existing tracks
 //     try {
 //       const extendedTracks = [];
-
+      
 //       clip.tracks.forEach((track, trackIndex) => {
 //         // Create extended version of the track
 //         const times = [];
 //         const values = [];
-
+        
 //         // Repeat the animation pattern multiple times
 //         const repeats = Math.ceil(newDuration / clip.duration);
-
+        
 //         for (let i = 0; i < repeats; i++) {
 //           const timeOffset = i * clip.duration;
-
+          
 //           if (track.times && track.values) {
 //             // Add original keyframes with time offset
 //             track.times.forEach((time, idx) => {
 //               times.push(time + timeOffset);
-
+              
 //               // Cycle through values for repeating pattern
 //               const valueIdx = idx % track.values.length;
 //               values.push(track.values[valueIdx]);
 //             });
 //           }
 //         }
-
+        
 //         if (times.length > 0 && values.length > 0) {
 //           const extendedTrack = new track.constructor(
 //             track.name,
@@ -5172,7 +5172,7 @@
 //           extendedTracks.push(extendedTrack);
 //         }
 //       });
-
+      
 //       return new THREE.AnimationClip(
 //         `${clip.name}_extended`,
 //         newDuration,
@@ -5183,22 +5183,22 @@
 //       return clip;
 //     }
 //   }, []);
-
+  
 //   useEffect(() => {
 //     let fbxLoader;
 //     let cleanup = () => {};
-
+    
 //     const loadModel = async () => {
 //       try {
 //         setLoading(true);
 //         setError(null);
-
+        
 //         console.log("🕺 Loading Male Dance Pose FBX...");
-
+        
 //         // Dynamically import FBXLoader to avoid SSR issues
 //         const { FBXLoader } = await import('three/examples/jsm/loaders/FBXLoader.js');
 //         fbxLoader = new FBXLoader();
-
+        
 //         // Load the model
 //         const loadedModel = await new Promise((resolve, reject) => {
 //           fbxLoader.load(
@@ -5225,19 +5225,19 @@
 //             }
 //           );
 //         });
-
+        
 //         if (loadedModel) {
 //           // Scale and position
 //           loadedModel.scale.setScalar(0.02);
 //           loadedModel.position.set(0, -1.5, 0);
 //           loadedModel.rotation.y = Math.PI;
-
+          
 //           // Enable shadows and enhance materials
 //           loadedModel.traverse((child) => {
 //             if (child.isMesh) {
 //               child.castShadow = true;
 //               child.receiveShadow = true;
-
+              
 //               // Enhance materials
 //               if (child.material) {
 //                 child.material.metalness = 0.3;
@@ -5246,77 +5246,77 @@
 //               }
 //             }
 //           });
-
+          
 //           // Extract animations
 //           const animations = loadedModel.animations || [];
 //           console.log(`🎬 Found ${animations.length} animations`);
-
+          
 //           if (animations.length > 0) {
 //             // Create animation mixer
 //             const animationMixer = new THREE.AnimationMixer(loadedModel);
-
+            
 //             // Process each animation clip
 //             animations.forEach((clip, index) => {
 //               console.log(`🎬 Animation ${index + 1}: "${clip.name}"`);
 //               console.log("   Duration:", clip.duration, "seconds");
 //               console.log("   Tracks:", clip.tracks.length);
-
+              
 //               let animationClip = clip;
-
+              
 //               // Check if animation is very short (likely a pose)
 //               if (clip.duration < 0.5) {
 //                 console.log("🔄 Extending short animation...");
 //                 animationClip = extendAnimationClip(clip);
 //               }
-
+              
 //               // Create and configure the action
 //               const action = animationMixer.clipAction(animationClip);
-
+              
 //               // Set animation properties
 //               action.timeScale = 0.8; // Slightly slower
 //               action.setEffectiveWeight(1.0);
 //               action.clampWhenFinished = false;
 //               action.loop = THREE.LoopRepeat;
 //               action.repetitions = Infinity;
-
+              
 //               // Random starting point for variety
 //               action.time = Math.random() * animationClip.duration;
-
+              
 //               action.play();
-
+              
 //               console.log(`▶️ Playing extended animation: ${animationClip.duration.toFixed(2)}s`);
 //             });
-
+            
 //             setMixer(animationMixer);
 //           } else {
 //             console.log("⚠️ No animations found in FBX file");
 //             // Mark for procedural animation
 //             loadedModel.userData.needsProceduralAnimation = true;
 //           }
-
+          
 //           setModel(loadedModel);
 //           clockRef.current.start();
 //         }
-
+        
 //       } catch (err) {
 //         console.error("❌ Error loading model:", err);
 //         setError(err.message);
-
+        
 //         // Create a simple fallback dancing character
 //         createFallbackModel();
-
+        
 //       } finally {
 //         setLoading(false);
 //       }
 //     };
-
+    
 //     const createFallbackModel = () => {
 //       console.log("🔄 Creating fallback dance model...");
-
+      
 //       // Create a group for the fallback model
 //       const fallbackGroup = new THREE.Group();
 //       fallbackGroup.userData.isFallback = true;
-
+      
 //       // Create body parts
 //       const bodyGeometry = new THREE.BoxGeometry(1, 2, 0.5);
 //       const bodyMaterial = new THREE.MeshStandardMaterial({ 
@@ -5328,7 +5328,7 @@
 //       body.castShadow = true;
 //       body.name = "body";
 //       fallbackGroup.add(body);
-
+      
 //       // Head
 //       const headGeometry = new THREE.SphereGeometry(0.4, 16, 16);
 //       const headMaterial = new THREE.MeshStandardMaterial({ 
@@ -5341,103 +5341,103 @@
 //       head.castShadow = true;
 //       head.name = "head";
 //       fallbackGroup.add(head);
-
+      
 //       // Arms
 //       const armGeometry = new THREE.BoxGeometry(0.3, 1.2, 0.3);
 //       const armMaterial = new THREE.MeshStandardMaterial({ color: 0xff8800 });
-
+      
 //       const leftArm = new THREE.Mesh(armGeometry, armMaterial);
 //       leftArm.position.set(-0.8, 0.5, 0);
 //       leftArm.castShadow = true;
 //       leftArm.name = "leftArm";
 //       fallbackGroup.add(leftArm);
-
+      
 //       const rightArm = new THREE.Mesh(armGeometry, armMaterial);
 //       rightArm.position.set(0.8, 0.5, 0);
 //       rightArm.castShadow = true;
 //       rightArm.name = "rightArm";
 //       fallbackGroup.add(rightArm);
-
+      
 //       // Legs
 //       const legGeometry = new THREE.BoxGeometry(0.3, 1.2, 0.3);
 //       const legMaterial = new THREE.MeshStandardMaterial({ color: 0x0088ff });
-
+      
 //       const leftLeg = new THREE.Mesh(legGeometry, legMaterial);
 //       leftLeg.position.set(-0.3, -1.5, 0);
 //       leftLeg.castShadow = true;
 //       leftLeg.name = "leftLeg";
 //       fallbackGroup.add(leftLeg);
-
+      
 //       const rightLeg = new THREE.Mesh(legGeometry, legMaterial);
 //       rightLeg.position.set(0.3, -1.5, 0);
 //       rightLeg.castShadow = true;
 //       rightLeg.name = "rightLeg";
 //       fallbackGroup.add(rightLeg);
-
+      
 //       // Add animation data
 //       fallbackGroup.userData.animationTime = 0;
 //       fallbackGroup.userData.parts = {
 //         leftArm, rightArm, leftLeg, rightLeg, head, body
 //       };
-
+      
 //       setModel(fallbackGroup);
 //     };
-
+    
 //     loadModel();
-
+    
 //     // Cleanup function
 //     cleanup = () => {
 //       if (mixer) {
 //         mixer.stopAllAction();
 //       }
 //     };
-
+    
 //     return cleanup;
 //   }, [extendAnimationClip]);
-
+  
 //   // Update procedural animation for models without proper animations
 //   const updateProceduralAnimation = useCallback((delta) => {
 //     if (!model || !groupRef.current) return;
-
+    
 //     const time = clockRef.current.getElapsedTime();
-
+    
 //     // Global movements
 //     const breath = Math.sin(time * 2) * 0.02;
 //     const sway = Math.sin(time * 0.8) * 0.03;
 //     const bounce = Math.sin(time * 1.5) * 0.01;
-
+    
 //     groupRef.current.position.y = breath + bounce;
 //     groupRef.current.rotation.z = sway;
 //     groupRef.current.rotation.x = Math.sin(time * 0.5) * 0.01;
-
+    
 //     // For fallback model with named parts
 //     if (model.userData.isFallback && model.userData.parts) {
 //       const parts = model.userData.parts;
-
+      
 //       // Head movement
 //       parts.head.rotation.y = Math.sin(time * 1.2) * 0.1;
 //       parts.head.rotation.x = Math.sin(time * 0.8) * 0.05;
-
+      
 //       // Arm movements with offset
 //       parts.leftArm.rotation.x = Math.sin(time * 3) * 0.8;
 //       parts.leftArm.rotation.z = Math.sin(time * 1.5) * 0.2;
 //       parts.rightArm.rotation.x = Math.sin(time * 3 + Math.PI) * 0.8;
 //       parts.rightArm.rotation.z = Math.sin(time * 1.5 + Math.PI) * 0.2;
-
+      
 //       // Leg movements with offset
 //       parts.leftLeg.rotation.x = Math.sin(time * 2) * 0.6;
 //       parts.rightLeg.rotation.x = Math.sin(time * 2 + Math.PI) * 0.6;
-
+      
 //       // Body rotation
 //       parts.body.rotation.y = Math.sin(time * 0.5) * 0.05;
 //     }
-
+    
 //     // For FBX models without animations
 //     if (model.userData.needsProceduralAnimation) {
 //       // Apply subtle movement to the entire model
 //       model.rotation.y += 0.001;
 //       model.position.y = Math.sin(time * 2) * 0.01;
-
+      
 //       // Try to find and animate specific bones/meshes
 //       model.traverse((child) => {
 //         if (child.isMesh) {
@@ -5447,10 +5447,10 @@
 //             a = ((a << 5) - a) + b.charCodeAt(0);
 //             return a & a;
 //           }, 0);
-
+          
 //           const frequency = 1 + (Math.abs(hash) % 10) / 10;
 //           const amplitude = 0.1 + (Math.abs(hash) % 10) / 100;
-
+          
 //           if (child.name.includes('Arm') || child.name.includes('arm')) {
 //             child.rotation.x = Math.sin(time * frequency) * amplitude;
 //           }
@@ -5464,23 +5464,23 @@
 //       });
 //     }
 //   }, [model]);
-
+  
 //   // Animation frame update
 //   useFrame((state, delta) => {
 //     // Update animation mixer if exists
 //     if (mixer) {
 //       mixer.update(delta);
 //     }
-
+    
 //     // Update procedural animations
 //     updateProceduralAnimation(delta);
-
+    
 //     // Add continuous rotation for visual interest
 //     if (groupRef.current) {
 //       groupRef.current.rotation.y += 0.0005;
 //     }
 //   });
-
+  
 //   // Loading state
 //   if (loading) {
 //     return (
@@ -5516,7 +5516,7 @@
 //       </Html>
 //     );
 //   }
-
+  
 //   // Error state
 //   if (error) {
 //     return (
@@ -5552,7 +5552,7 @@
 //       </Html>
 //     );
 //   }
-
+  
 //   // Render the model
 //   return model ? (
 //     <group ref={groupRef}>
@@ -5568,16 +5568,16 @@
 //   const { scene } = useGLTF("/models/standing.glb");
 //   const groupRef = useRef();
 //   const filteredLandmarks = useRef(createFilteredLandmarks());
-
+  
 //   useFrame(() => {
 //     if (!landmarks?.pose || !scene) return;
-
+    
 //     // Apply Kalman filtering to landmarks
 //     const smoothedLandmarks = filteredLandmarks.current.update(landmarks);
 //     if (!smoothedLandmarks?.pose) return;
-
+    
 //     const pose = smoothedLandmarks.pose;
-
+    
 //     // Simple arm tracking
 //     if (scene.traverse) {
 //       scene.traverse((child) => {
@@ -5600,7 +5600,7 @@
 //       });
 //     }
 //   });
-
+  
 //   if (!scene) {
 //     return (
 //       <Html center>
@@ -5620,7 +5620,7 @@
 //       </Html>
 //     );
 //   }
-
+  
 //   return (
 //     <group ref={groupRef}>
 //       <primitive object={scene} scale={1.3} position={[0, 0, 0]} />
@@ -5635,7 +5635,7 @@
 //   const landmarks = useLandmarks();
 //   const [connectionStatus, setConnectionStatus] = useState("disconnected");
 //   const [showControls, setShowControls] = useState(true);
-
+  
 //   // Monitor connection status
 //   useEffect(() => {
 //     if (landmarks) {
@@ -5644,7 +5644,7 @@
 //       setConnectionStatus("disconnected");
 //     }
 //   }, [landmarks]);
-
+  
 //   return (
 //     <>
 //       {/* Connection Status */}
@@ -5686,7 +5686,7 @@
 //           )}
 //         </div>
 //       </div>
-
+      
 //       {/* Controls Toggle */}
 //       <button
 //         onClick={() => setShowControls(!showControls)}
@@ -5710,7 +5710,7 @@
 //       >
 //         {showControls ? 'Hide Controls' : 'Show Controls'}
 //       </button>
-
+      
 //       {/* Main Canvas */}
 //       <Canvas 
 //         camera={{ 
@@ -5746,7 +5746,7 @@
 //           groundColor="#888888"
 //           intensity={0.5}
 //         />
-
+        
 //         {/* Point light for drama */}
 //         <pointLight 
 //           position={[0, 3, 2]} 
@@ -5755,10 +5755,10 @@
 //           distance={10}
 //           decay={2}
 //         />
-
+        
 //         {/* Environment */}
 //         <Environment preset="studio" />
-
+        
 //         {/* Floor */}
 //         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.5, 0]} receiveShadow>
 //           <planeGeometry args={[20, 20]} />
@@ -5769,7 +5769,7 @@
 //             metalness={0.2}
 //           />
 //         </mesh>
-
+        
 //         {/* Dance floor effect */}
 //         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.49, 0]}>
 //           <planeGeometry args={[5, 5]} />
@@ -5781,7 +5781,7 @@
 //             opacity={0.3}
 //           />
 //         </mesh>
-
+        
 //         {/* Avatar */}
 //         <Suspense fallback={
 //           <Html center>
@@ -5805,7 +5805,7 @@
 //             <MaleDancePoseAvatar />
 //           )}
 //         </Suspense>
-
+        
 //         {/* Camera Controls */}
 //         {showControls && (
 //           <OrbitControls 
@@ -5819,13 +5819,13 @@
 //             dampingFactor={0.05}
 //           />
 //         )}
-
+        
 //         {/* Grid Helper (only in dev) */}
 //         {process.env.NODE_ENV === 'development' && (
 //           <gridHelper args={[20, 20, 0x444444, 0x888888]} />
 //         )}
 //       </Canvas>
-
+      
 //       {/* Instructions */}
 //       <div style={{
 //         position: 'absolute',
@@ -5860,7 +5860,7 @@
 //           {connectionStatus === 'disconnected' && '> python capture_and_send.py'}
 //         </div>
 //       </div>
-
+      
 //       {/* CSS Animations */}
 //       <style>{`
 //         @keyframes pulse {
@@ -5868,12 +5868,12 @@
 //           50% { opacity: 0.5; transform: scale(1.1); }
 //           100% { opacity: 1; transform: scale(1); }
 //         }
-
+        
 //         @keyframes blink {
 //           0%, 100% { opacity: 1; }
 //           50% { opacity: 0.3; }
 //         }
-
+        
 //         @keyframes danceFloor {
 //           0% { box-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff, inset 0 0 10px #ff00ff; }
 //           50% { box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, inset 0 0 20px #00ffff; }
@@ -5904,25 +5904,25 @@
 //   const [mixer, setMixer] = useState(null);
 //   const [loading, setLoading] = useState(true);
 //   const [error, setError] = useState(null);
-
+  
 //   const groupRef = useRef();
 //   const clockRef = useRef(new THREE.Clock(false));
-
+  
 //   useEffect(() => {
 //     let fbxLoader;
 //     let animationMixer = null;
-
+    
 //     const loadModel = async () => {
 //       try {
 //         setLoading(true);
 //         setError(null);
-
+        
 //         console.log("🕺 Loading Male Dance Pose FBX...");
-
+        
 //         // Dynamically import FBXLoader
 //         const { FBXLoader } = await import('three/examples/jsm/loaders/FBXLoader.js');
 //         fbxLoader = new FBXLoader();
-
+        
 //         // Load the model
 //         const loadedModel = await new Promise((resolve, reject) => {
 //           fbxLoader.load(
@@ -5943,7 +5943,7 @@
 //             }
 //           );
 //         });
-
+        
 //         if (loadedModel) {
 //           // FIRST, let's see what we have in the model
 //           console.log("🔍 Model structure:", {
@@ -5952,7 +5952,7 @@
 //             childrenCount: loadedModel.children.length,
 //             hasAnimations: loadedModel.animations?.length > 0
 //           });
-
+          
 //           // Traverse and log all children
 //           loadedModel.traverse((child) => {
 //             console.log(`  - ${child.type}: ${child.name || 'unnamed'}`, {
@@ -5962,20 +5962,20 @@
 //               position: child.position ? {x: child.position.x, y: child.position.y, z: child.position.z} : null
 //             });
 //           });
-
+          
 //           // IMPORTANT: Try different scales - the model might be too small or too big
 //           // Try a larger scale first
 //           loadedModel.scale.set(0.1, 0.1, 0.1); // Increased from 0.02
-
+          
 //           // Reset position
 //           loadedModel.position.set(0, 0, 0); // Start at origin
 //           loadedModel.rotation.set(0, 0, 0); // No rotation initially
-
+          
 //           // Apply basic material to ALL meshes to ensure visibility
 //           loadedModel.traverse((child) => {
 //             if (child.isMesh) {
 //               console.log(`🎨 Applying material to mesh: ${child.name || 'unnamed'}`);
-
+              
 //               // Replace material with a simple, visible material
 //               child.material = new THREE.MeshStandardMaterial({
 //                 color: 0x00aaff, // Bright blue color
@@ -5984,13 +5984,13 @@
 //                 emissive: 0x000000,
 //                 emissiveIntensity: 0
 //               });
-
+              
 //               child.castShadow = true;
 //               child.receiveShadow = true;
-
+              
 //               // Enable frustum culling
 //               child.frustumCulled = false;
-
+              
 //               // Log mesh info
 //               console.log(`  ✅ Mesh ${child.name || 'unnamed'} updated`, {
 //                 vertices: child.geometry?.attributes?.position?.count || 0,
@@ -5998,32 +5998,32 @@
 //               });
 //             }
 //           });
-
+          
 //           // Check for animations
 //           const animations = loadedModel.animations || [];
 //           console.log(`🎬 Found ${animations.length} animations`);
-
+          
 //           if (animations.length > 0) {
 //             // Create animation mixer
 //             animationMixer = new THREE.AnimationMixer(loadedModel);
-
+            
 //             animations.forEach((clip, index) => {
 //               console.log(`  Animation ${index + 1}: "${clip.name}"`, {
 //                 duration: clip.duration,
 //                 tracks: clip.tracks.length
 //               });
-
+              
 //               // Create action
 //               const action = animationMixer.clipAction(clip);
-
+              
 //               // If it's a very short animation (pose), create a looping version
 //               if (clip.duration < 0.5) {
 //                 console.log("🔄 Creating looping animation from pose");
-
+                
 //                 // Set up the action to loop
 //                 action.loop = THREE.LoopRepeat;
 //                 action.clampWhenFinished = false;
-
+                
 //                 // We'll manually animate in useFrame
 //               } else {
 //                 // For longer animations, play normally
@@ -6031,33 +6031,33 @@
 //                 action.play();
 //               }
 //             });
-
+            
 //             setMixer(animationMixer);
 //           }
-
+          
 //           setModel(loadedModel);
 //           clockRef.current.start();
-
+          
 //           console.log("🎉 Model ready for rendering");
 //         }
-
+        
 //       } catch (err) {
 //         console.error("❌ Error loading model:", err);
 //         setError(err.message);
-
+        
 //         // Create a simple visible fallback model
 //         createFallbackModel();
-
+        
 //       } finally {
 //         setLoading(false);
 //       }
 //     };
-
+    
 //     const createFallbackModel = () => {
 //       console.log("🔄 Creating fallback model...");
-
+      
 //       const group = new THREE.Group();
-
+      
 //       // Create a simple cube that's definitely visible
 //       const geometry = new THREE.BoxGeometry(1, 2, 1);
 //       const material = new THREE.MeshStandardMaterial({ 
@@ -6065,58 +6065,58 @@
 //         emissive: 0xff0000,
 //         emissiveIntensity: 0.3
 //       });
-
+      
 //       const cube = new THREE.Mesh(geometry, material);
 //       cube.castShadow = true;
 //       cube.receiveShadow = true;
 //       cube.position.set(0, 1, 0); // Position at eye level
-
+      
 //       group.add(cube);
-
+      
 //       // Add a sphere head
 //       const headGeometry = new THREE.SphereGeometry(0.3, 16, 16);
 //       const headMaterial = new THREE.MeshStandardMaterial({ color: 0x00ff00 });
 //       const head = new THREE.Mesh(headGeometry, headMaterial);
 //       head.position.set(0, 1.8, 0);
 //       group.add(head);
-
+      
 //       // Make the model larger
 //       group.scale.set(0.5, 0.5, 0.5);
-
+      
 //       setModel(group);
 //     };
-
+    
 //     loadModel();
-
+    
 //     return () => {
 //       if (animationMixer) {
 //         animationMixer.stopAllAction();
 //       }
 //     };
 //   }, []);
-
+  
 //   // Animation frame update
 //   useFrame((state, delta) => {
 //     // Update animation mixer if exists
 //     if (mixer) {
 //       mixer.update(delta);
 //     }
-
+    
 //     // Add subtle animation to the model
 //     if (model && groupRef.current) {
 //       const time = clockRef.current.getElapsedTime();
-
+      
 //       // Breathing effect
 //       const breath = Math.sin(time * 2) * 0.02;
 //       groupRef.current.position.y = breath;
-
+      
 //       // Gentle sway
 //       const sway = Math.sin(time * 0.5) * 0.03;
 //       groupRef.current.rotation.z = sway;
-
+      
 //       // Slow rotation
 //       groupRef.current.rotation.y += 0.001;
-
+      
 //       // If it's the fallback model, add more animation
 //       if (model.children.some(child => child.type === 'Mesh' && child.geometry.type === 'BoxGeometry')) {
 //         // Animate arms and legs
@@ -6133,7 +6133,7 @@
 //       }
 //     }
 //   });
-
+  
 //   // Loading state
 //   if (loading) {
 //     return (
@@ -6169,7 +6169,7 @@
 //       </Html>
 //     );
 //   }
-
+  
 //   // Error state
 //   if (error) {
 //     return (
@@ -6205,7 +6205,7 @@
 //       </Html>
 //     );
 //   }
-
+  
 //   // Render the model
 //   return model ? (
 //     <group ref={groupRef} position={[0, -1.5, 0]}>
@@ -6221,16 +6221,16 @@
 //   const { scene } = useGLTF("/models/standing.glb");
 //   const groupRef = useRef();
 //   const filteredLandmarks = useRef(createFilteredLandmarks());
-
+  
 //   useFrame(() => {
 //     if (!landmarks?.pose || !scene) return;
-
+    
 //     // Apply Kalman filtering to landmarks
 //     const smoothedLandmarks = filteredLandmarks.current.update(landmarks);
 //     if (!smoothedLandmarks?.pose) return;
-
+    
 //     const pose = smoothedLandmarks.pose;
-
+    
 //     // Simple arm tracking
 //     if (scene.traverse) {
 //       scene.traverse((child) => {
@@ -6253,7 +6253,7 @@
 //       });
 //     }
 //   });
-
+  
 //   if (!scene) {
 //     return (
 //       <Html center>
@@ -6273,7 +6273,7 @@
 //       </Html>
 //     );
 //   }
-
+  
 //   return (
 //     <group ref={groupRef} position={[0, -1.5, 0]}>
 //       <primitive object={scene} scale={1.3} />
@@ -6288,7 +6288,7 @@
 //   const landmarks = useLandmarks();
 //   const [connectionStatus, setConnectionStatus] = useState("disconnected");
 //   const [showControls, setShowControls] = useState(true);
-
+  
 //   // Monitor connection status
 //   useEffect(() => {
 //     if (landmarks) {
@@ -6297,7 +6297,7 @@
 //       setConnectionStatus("disconnected");
 //     }
 //   }, [landmarks]);
-
+  
 //   return (
 //     <>
 //       {/* Connection Status */}
@@ -6339,7 +6339,7 @@
 //           )}
 //         </div>
 //       </div>
-
+      
 //       {/* Controls Toggle */}
 //       <button
 //         onClick={() => setShowControls(!showControls)}
@@ -6363,7 +6363,7 @@
 //       >
 //         {showControls ? 'Hide Controls' : 'Show Controls'}
 //       </button>
-
+      
 //       {/* Debug Info */}
 //       <div style={{
 //         position: 'absolute',
@@ -6382,7 +6382,7 @@
 //         <div>Mode: {connectionStatus === 'connected' ? 'Live Tracking' : 'Dance Animation'}</div>
 //         <div>Status: {connectionStatus === 'connected' ? 'Connected' : 'Waiting for Python script'}</div>
 //       </div>
-
+      
 //       {/* Main Canvas */}
 //       <Canvas 
 //         camera={{ 
@@ -6418,7 +6418,7 @@
 //           groundColor="#888888"
 //           intensity={0.5}
 //         />
-
+        
 //         {/* Point light for drama */}
 //         <pointLight 
 //           position={[0, 3, 2]} 
@@ -6427,10 +6427,10 @@
 //           distance={10}
 //           decay={2}
 //         />
-
+        
 //         {/* Environment */}
 //         <Environment preset="studio" />
-
+        
 //         {/* Floor */}
 //         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.5, 0]} receiveShadow>
 //           <planeGeometry args={[20, 20]} />
@@ -6441,7 +6441,7 @@
 //             metalness={0.2}
 //           />
 //         </mesh>
-
+        
 //         {/* Dance floor effect */}
 //         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.49, 0]}>
 //           <planeGeometry args={[5, 5]} />
@@ -6453,7 +6453,7 @@
 //             opacity={0.3}
 //           />
 //         </mesh>
-
+        
 //         {/* Avatar */}
 //         <Suspense fallback={
 //           <Html center>
@@ -6477,7 +6477,7 @@
 //             <MaleDancePoseAvatar />
 //           )}
 //         </Suspense>
-
+        
 //         {/* Camera Controls */}
 //         {showControls && (
 //           <OrbitControls 
@@ -6490,18 +6490,18 @@
 //             dampingFactor={0.05}
 //           />
 //         )}
-
+        
 //         {/* Grid Helper (only in dev) */}
 //         {process.env.NODE_ENV === 'development' && (
 //           <gridHelper args={[20, 20, 0x444444, 0x888888]} />
 //         )}
-
+        
 //         {/* Axis Helper */}
 //         {process.env.NODE_ENV === 'development' && (
 //           <axesHelper args={[5]} />
 //         )}
 //       </Canvas>
-
+      
 //       {/* Instructions */}
 //       <div style={{
 //         position: 'absolute',
@@ -6536,7 +6536,7 @@
 //           {connectionStatus === 'disconnected' && '> python capture_and_send.py'}
 //         </div>
 //       </div>
-
+      
 //       {/* CSS Animations */}
 //       <style>{`
 //         @keyframes pulse {
@@ -6544,12 +6544,12 @@
 //           50% { opacity: 0.5; transform: scale(1.1); }
 //           100% { opacity: 1; transform: scale(1); }
 //         }
-
+        
 //         @keyframes blink {
 //           0%, 100% { opacity: 1; }
 //           50% { opacity: 0.3; }
 //         }
-
+        
 //         @keyframes danceFloor {
 //           0% { box-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff, inset 0 0 10px #ff00ff; }
 //           50% { box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, inset 0 0 20px #00ffff; }
@@ -6583,25 +6583,25 @@
 //   const [mixer, setMixer] = useState(null);
 //   const [loading, setLoading] = useState(true);
 //   const [error, setError] = useState(null);
-
+  
 //   const groupRef = useRef();
 //   const clockRef = useRef(new THREE.Clock(false));
-
+  
 //   useEffect(() => {
 //     let fbxLoader;
 //     let animationMixer = null;
-
+    
 //     const loadModel = async () => {
 //       try {
 //         setLoading(true);
 //         setError(null);
-
+        
 //         console.log("🕺 Loading Male Dance Pose FBX...");
-
+        
 //         // Dynamically import FBXLoader
 //         const { FBXLoader } = await import('three/examples/jsm/loaders/FBXLoader.js');
 //         fbxLoader = new FBXLoader();
-
+        
 //         // Load the model
 //         const loadedModel = await new Promise((resolve, reject) => {
 //           fbxLoader.load(
@@ -6622,19 +6622,19 @@
 //             }
 //           );
 //         });
-
+        
 //         if (loadedModel) {
 //           // Scale and position
 //           loadedModel.scale.setScalar(0.02);
 //           loadedModel.position.set(0, -1.5, 0);
 //           loadedModel.rotation.y = Math.PI;
-
+          
 //           // Enable shadows and enhance materials
 //           loadedModel.traverse((child) => {
 //             if (child.isMesh) {
 //               child.castShadow = true;
 //               child.receiveShadow = true;
-
+              
 //               // Enhance materials
 //               if (child.material) {
 //                 child.material.metalness = 0.3;
@@ -6643,23 +6643,23 @@
 //               }
 //             }
 //           });
-
+          
 //           // Create animation mixer
 //           animationMixer = new THREE.AnimationMixer(loadedModel);
-
+          
 //           // Get animations from model
 //           const animations = loadedModel.animations || [];
 //           console.log(`🎬 Found ${animations.length} animations`);
-
+          
 //           if (animations.length > 0) {
 //             // Check animation duration
 //             animations.forEach((clip, index) => {
 //               console.log(`📊 Animation "${clip.name}": ${clip.duration.toFixed(3)}s, ${clip.tracks.length} tracks`);
-
+              
 //               // If animation is very short (single frame pose), we'll create our own animation
 //               if (clip.duration < 0.1) {
 //                 console.log("📏 Single frame pose detected - creating custom dance animation");
-
+                
 //                 // Create custom animation clips
 //                 createCustomAnimations(animationMixer, loadedModel);
 //               } else {
@@ -6676,28 +6676,28 @@
 //             console.log("⚠️ No animations found - creating custom dance animation");
 //             createCustomAnimations(animationMixer, loadedModel);
 //           }
-
+          
 //           setModel(loadedModel);
 //           setMixer(animationMixer);
 //           clockRef.current.start();
 //         }
-
+        
 //       } catch (err) {
 //         console.error("❌ Error loading model:", err);
 //         setError(err.message);
-
+        
 //         // Create fallback model with animations
 //         createFallbackModel();
-
+        
 //       } finally {
 //         setLoading(false);
 //       }
 //     };
-
+    
 //     // Create custom dance animations programmatically
 //     const createCustomAnimations = (mixer, model) => {
 //       console.log("💃 Creating custom dance animations...");
-
+      
 //       // Find bones in the model
 //       const bones = {};
 //       model.traverse((child) => {
@@ -6706,16 +6706,16 @@
 //           console.log(`🦴 Found bone: ${child.name}`);
 //         }
 //       });
-
+      
 //       // Create custom animation clips
 //       const clips = [];
-
+      
 //       // 1. Breathing animation (subtle up/down movement)
 //       const breathingTracks = [];
-
+      
 //       // Try to find the root bone or use the model itself
 //       const rootBone = bones['mixamorigHips'] || bones['Hips'] || bones['root'] || model;
-
+      
 //       // Breathing: subtle vertical movement
 //       const breathingClip = new THREE.AnimationClip('breathing', 2, [
 //         new THREE.VectorKeyframeTrack(
@@ -6725,7 +6725,7 @@
 //         )
 //       ]);
 //       clips.push(breathingClip);
-
+      
 //       // 2. Sway animation (left/right rotation)
 //       const swayClip = new THREE.AnimationClip('sway', 3, [
 //         new THREE.VectorKeyframeTrack(
@@ -6735,7 +6735,7 @@
 //         )
 //       ]);
 //       clips.push(swayClip);
-
+      
 //       // 3. Head movement animation
 //       const headBone = bones['mixamorigHead'] || bones['Head'];
 //       if (headBone) {
@@ -6748,11 +6748,11 @@
 //         ]);
 //         clips.push(headClip);
 //       }
-
+      
 //       // 4. Arm dance animation (if arm bones exist)
 //       const leftArmBone = bones['mixamorigLeftArm'] || bones['LeftArm'];
 //       const rightArmBone = bones['mixamorigRightArm'] || bones['RightArm'];
-
+      
 //       if (leftArmBone && rightArmBone) {
 //         const armClip = new THREE.AnimationClip('arm_dance', 1.5, [
 //           new THREE.VectorKeyframeTrack(
@@ -6768,7 +6768,7 @@
 //         ]);
 //         clips.push(armClip);
 //       }
-
+      
 //       // Play all clips
 //       clips.forEach((clip, index) => {
 //         const action = mixer.clipAction(clip);
@@ -6778,53 +6778,53 @@
 //         console.log(`▶️ Playing custom animation: ${clip.name} (${clip.duration}s)`);
 //       });
 //     };
-
+    
 //     // Create fallback model with bone-based animation
 //     const createFallbackModel = () => {
 //       console.log("🔄 Creating animated fallback model...");
-
+      
 //       const group = new THREE.Group();
 //       group.userData.isFallback = true;
-
+      
 //       // Create skeleton
 //       const bones = {};
-
+      
 //       // Root bone
 //       bones.root = new THREE.Bone();
 //       bones.root.position.y = 0;
-
+      
 //       // Spine
 //       bones.spine = new THREE.Bone();
 //       bones.spine.position.y = 1;
 //       bones.root.add(bones.spine);
-
+      
 //       // Head
 //       bones.head = new THREE.Bone();
 //       bones.head.position.y = 0.5;
 //       bones.spine.add(bones.head);
-
+      
 //       // Left Arm
 //       bones.leftArm = new THREE.Bone();
 //       bones.leftArm.position.set(-0.5, 0, 0);
 //       bones.spine.add(bones.leftArm);
-
+      
 //       // Right Arm
 //       bones.rightArm = new THREE.Bone();
 //       bones.rightArm.position.set(0.5, 0, 0);
 //       bones.spine.add(bones.rightArm);
-
+      
 //       // Left Leg
 //       bones.leftLeg = new THREE.Bone();
 //       bones.leftLeg.position.set(-0.2, -1, 0);
 //       bones.root.add(bones.leftLeg);
-
+      
 //       // Right Leg
 //       bones.rightLeg = new THREE.Bone();
 //       bones.rightLeg.position.set(0.2, -1, 0);
 //       bones.root.add(bones.rightLeg);
-
+      
 //       group.add(bones.root);
-
+      
 //       // Create mesh for visualization
 //       const bodyGeometry = new THREE.BoxGeometry(0.5, 2, 0.3);
 //       const bodyMaterial = new THREE.MeshStandardMaterial({ 
@@ -6836,7 +6836,7 @@
 //       body.castShadow = true;
 //       body.position.y = 1;
 //       group.add(body);
-
+      
 //       // Head
 //       const headGeometry = new THREE.SphereGeometry(0.3, 16, 16);
 //       const headMaterial = new THREE.MeshStandardMaterial({ color: 0x00ffff });
@@ -6844,45 +6844,45 @@
 //       head.position.y = 1.5;
 //       head.castShadow = true;
 //       group.add(head);
-
+      
 //       // Arms
 //       const armGeometry = new THREE.BoxGeometry(0.2, 1, 0.2);
 //       const armMaterial = new THREE.MeshStandardMaterial({ color: 0xff8800 });
-
+      
 //       const leftArm = new THREE.Mesh(armGeometry, armMaterial);
 //       leftArm.position.set(-0.5, 0.5, 0);
 //       leftArm.castShadow = true;
 //       group.add(leftArm);
-
+      
 //       const rightArm = new THREE.Mesh(armGeometry, armMaterial);
 //       rightArm.position.set(0.5, 0.5, 0);
 //       rightArm.castShadow = true;
 //       group.add(rightArm);
-
+      
 //       // Legs
 //       const legGeometry = new THREE.BoxGeometry(0.2, 1, 0.2);
 //       const legMaterial = new THREE.MeshStandardMaterial({ color: 0x0088ff });
-
+      
 //       const leftLeg = new THREE.Mesh(legGeometry, legMaterial);
 //       leftLeg.position.set(-0.2, -0.5, 0);
 //       leftLeg.castShadow = true;
 //       group.add(leftLeg);
-
+      
 //       const rightLeg = new THREE.Mesh(legGeometry, legMaterial);
 //       rightLeg.position.set(0.2, -0.5, 0);
 //       rightLeg.castShadow = true;
 //       group.add(rightLeg);
-
+      
 //       // Store references
 //       group.userData.bones = bones;
 //       group.userData.meshes = { body, head, leftArm, rightArm, leftLeg, rightLeg };
 //       group.userData.animationTime = 0;
-
+      
 //       setModel(group);
 //     };
-
+    
 //     loadModel();
-
+    
 //     // Cleanup
 //     return () => {
 //       if (animationMixer) {
@@ -6890,42 +6890,42 @@
 //       }
 //     };
 //   }, []);
-
+  
 //   // Animation frame update
 //   useFrame((state, delta) => {
 //     // Update animation mixer if exists
 //     if (mixer) {
 //       mixer.update(delta);
 //     }
-
+    
 //     // Update fallback model animation
 //     if (model?.userData?.isFallback) {
 //       const time = clockRef.current.getElapsedTime();
-
+      
 //       const bones = model.userData.bones;
 //       const meshes = model.userData.meshes;
-
+      
 //       if (bones && meshes) {
 //         // Breathing
 //         bones.root.position.y = Math.sin(time * 2) * 0.02;
-
+        
 //         // Sway
 //         bones.root.rotation.z = Math.sin(time * 0.5) * 0.05;
-
+        
 //         // Head movement
 //         bones.head.rotation.y = Math.sin(time * 1.2) * 0.2;
 //         bones.head.rotation.x = Math.sin(time * 0.8) * 0.05;
-
+        
 //         // Arm dance
 //         bones.leftArm.rotation.x = Math.sin(time * 3) * 0.8;
 //         bones.rightArm.rotation.x = Math.sin(time * 3 + Math.PI) * 0.8;
 //         bones.leftArm.rotation.z = Math.sin(time * 2) * 0.3;
 //         bones.rightArm.rotation.z = Math.sin(time * 2) * 0.3;
-
+        
 //         // Leg movement
 //         bones.leftLeg.rotation.x = Math.sin(time * 2) * 0.5;
 //         bones.rightLeg.rotation.x = Math.sin(time * 2 + Math.PI) * 0.5;
-
+        
 //         // Update mesh positions to follow bones
 //         meshes.body.position.copy(bones.spine.position);
 //         meshes.head.position.copy(bones.head.position);
@@ -6933,7 +6933,7 @@
 //         meshes.rightArm.position.copy(bones.rightArm.position);
 //         meshes.leftLeg.position.copy(bones.leftLeg.position);
 //         meshes.rightLeg.position.copy(bones.rightLeg.position);
-
+        
 //         // Update mesh rotations
 //         meshes.head.rotation.copy(bones.head.rotation);
 //         meshes.leftArm.rotation.copy(bones.leftArm.rotation);
@@ -6942,13 +6942,13 @@
 //         meshes.rightLeg.rotation.copy(bones.rightLeg.rotation);
 //       }
 //     }
-
+    
 //     // Add continuous slow rotation for visual interest
 //     if (groupRef.current) {
 //       groupRef.current.rotation.y += 0.0005;
 //     }
 //   });
-
+  
 //   // Loading state
 //   if (loading) {
 //     return (
@@ -6984,7 +6984,7 @@
 //       </Html>
 //     );
 //   }
-
+  
 //   // Error state
 //   if (error) {
 //     return (
@@ -7020,7 +7020,7 @@
 //       </Html>
 //     );
 //   }
-
+  
 //   // Render the model
 //   return model ? (
 //     <group ref={groupRef}>
@@ -7036,16 +7036,16 @@
 //   const { scene } = useGLTF("/models/standing.glb");
 //   const groupRef = useRef();
 //   const filteredLandmarks = useRef(createFilteredLandmarks());
-
+  
 //   useFrame(() => {
 //     if (!landmarks?.pose || !scene) return;
-
+    
 //     // Apply Kalman filtering to landmarks
 //     const smoothedLandmarks = filteredLandmarks.current.update(landmarks);
 //     if (!smoothedLandmarks?.pose) return;
-
+    
 //     const pose = smoothedLandmarks.pose;
-
+    
 //     // Simple arm tracking
 //     if (scene.traverse) {
 //       scene.traverse((child) => {
@@ -7068,7 +7068,7 @@
 //       });
 //     }
 //   });
-
+  
 //   if (!scene) {
 //     return (
 //       <Html center>
@@ -7088,7 +7088,7 @@
 //       </Html>
 //     );
 //   }
-
+  
 //   return (
 //     <group ref={groupRef}>
 //       <primitive object={scene} scale={1.3} position={[0, 0, 0]} />
@@ -7112,7 +7112,7 @@
 //       setConnectionStatus("disconnected");
 //     }
 //   }, [landmarks]);
-
+  
 //   return (
 //     <>
 //       {/* Connection Status */}
@@ -7154,7 +7154,7 @@
 //           )}
 //         </div>
 //       </div>
-
+      
 //       {/* Controls Toggle */}
 //       <button
 //         onClick={() => setShowControls(!showControls)}
@@ -7178,7 +7178,7 @@
 //       >
 //         {showControls ? 'Hide Controls' : 'Show Controls'}
 //       </button>
-
+      
 //       {/* Main Canvas */}
 //       <Canvas 
 //         camera={{ 
@@ -7214,7 +7214,7 @@
 //           groundColor="#888888"
 //           intensity={0.5}
 //         />
-
+        
 //         {/* Point light for drama */}
 //         <pointLight 
 //           position={[0, 3, 2]} 
@@ -7223,10 +7223,10 @@
 //           distance={10}
 //           decay={2}
 //         />
-
+        
 //         {/* Environment */}
 //         <Environment preset="studio" />
-
+        
 //         {/* Floor */}
 //         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.5, 0]} receiveShadow>
 //           <planeGeometry args={[20, 20]} />
@@ -7237,7 +7237,7 @@
 //             metalness={0.2}
 //           />
 //         </mesh>
-
+        
 //         {/* Dance floor effect */}
 //         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.49, 0]}>
 //           <planeGeometry args={[5, 5]} />
@@ -7249,7 +7249,7 @@
 //             opacity={0.3}
 //           />
 //         </mesh>
-
+        
 //         {/* Avatar */}
 //         <Suspense fallback={
 //           <Html center>
@@ -7273,7 +7273,7 @@
 //             <MaleDancePoseAvatar />
 //           )}
 //         </Suspense>
-
+        
 //         {/* Camera Controls */}
 //         {showControls && (
 //           <OrbitControls 
@@ -7287,13 +7287,13 @@
 //             dampingFactor={0.05}
 //           />
 //         )}
-
+        
 //         {/* Grid Helper (only in dev) */}
 //         {process.env.NODE_ENV === 'development' && (
 //           <gridHelper args={[20, 20, 0x444444, 0x888888]} />
 //         )}
 //       </Canvas>
-
+      
 //       {/* Instructions */}
 //       <div style={{
 //         position: 'absolute',
@@ -7328,7 +7328,7 @@
 //           {connectionStatus === 'disconnected' && '> python capture_and_send.py'}
 //         </div>
 //       </div>
-
+      
 //       {/* CSS Animations */}
 //       <style>{`
 //         @keyframes pulse {
@@ -7336,12 +7336,12 @@
 //           50% { opacity: 0.5; transform: scale(1.1); }
 //           100% { opacity: 1; transform: scale(1); }
 //         }
-
+        
 //         @keyframes blink {
 //           0%, 100% { opacity: 1; }
 //           50% { opacity: 0.3; }
 //         }
-
+        
 //         @keyframes danceFloor {
 //           0% { box-shadow: 0 0 5px #ff00ff, 0 0 10px #ff00ff, inset 0 0 10px #ff00ff; }
 //           50% { box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, inset 0 0 20px #00ffff; }
@@ -7369,24 +7369,24 @@ function IdleAvatar() {
   const { scene } = useGLTF("/models/standing.glb");
   const groupRef = useRef();
   const clockRef = useRef(new THREE.Clock(false));
-
+  
   useFrame((state, delta) => {
     // Add subtle breathing motion
     if (groupRef.current) {
       const time = state.clock.elapsedTime;
       const breath = Math.sin(time * 2) * 0.01;
       const sway = Math.sin(time * 0.5) * 0.02;
-
+      
       groupRef.current.position.y = breath;
       groupRef.current.rotation.z = sway;
-
+      
       // Add slow continuous rotation
       groupRef.current.rotation.y += 0.001;
     }
   });
-
-  return <primitive ref={groupRef} object={scene} scale={1.3} position={[0, 0, 0]} />;
-}
+  
+   return <primitive ref={groupRef} object={scene} scale={1.3} position={[0, 0, 0]} />;
+ }
 
 
 function LiveAvatar({ landmarks }) {
@@ -7395,7 +7395,7 @@ function LiveAvatar({ landmarks }) {
   const filteredLandmarks = useRef(createFilteredLandmarks());
   const lastLandmarksRef = useRef(null);
   const boneRotationsRef = useRef({});
-
+  
   // Initialize bone rotations
   useEffect(() => {
     if (scene) {
@@ -7411,11 +7411,11 @@ function LiveAvatar({ landmarks }) {
       console.log("🎯 Live tracking initialized with bone system");
     }
   }, [scene]);
-
+  
   // Convert MediaPipe coordinates to Three.js world coordinates
   const mapLandmarkToWorld = useCallback((landmark) => {
     if (!landmark) return { x: 0, y: 0, z: 0 };
-
+    
     // MediaPipe coordinates: x,y in [0,1], z is depth
     // Convert to Three.js coordinates
     return {
@@ -7424,36 +7424,36 @@ function LiveAvatar({ landmarks }) {
       z: (landmark.z || 0) * 2    // Scale depth
     };
   }, []);
-
+  
   // Calculate rotation between two vectors
   const calculateRotation = useCallback((fromVec, toVec, up = new THREE.Vector3(0, 1, 0)) => {
     const quaternion = new THREE.Quaternion();
     const matrix = new THREE.Matrix4();
-
+    
     // Create lookAt matrix
     matrix.lookAt(new THREE.Vector3(0, 0, 0), toVec.clone().normalize(), up);
     quaternion.setFromRotationMatrix(matrix);
-
+    
     return quaternion;
   }, []);
-
+  
   // Calculate angle between two vectors
   const calculateAngle = useCallback((vec1, vec2) => {
     const v1 = new THREE.Vector3(vec1.x, vec1.y, vec1.z).normalize();
     const v2 = new THREE.Vector3(vec2.x, vec2.y, vec2.z).normalize();
     return Math.acos(v1.dot(v2));
   }, []);
-
+  
   // Process full body tracking
   const processBodyTracking = useCallback((pose) => {
     if (!pose || !nodes) return;
-
+    
     // Map all key landmarks to world coordinates
     const landmarks3D = {};
     Object.keys(pose).forEach(key => {
       landmarks3D[key] = mapLandmarkToWorld(pose[key]);
     });
-
+    
     // 1. SPINE & HIP TRACKING
     if (landmarks3D.LEFT_HIP && landmarks3D.RIGHT_HIP && landmarks3D.LEFT_SHOULDER && landmarks3D.RIGHT_SHOULDER) {
       // Calculate hip center
@@ -7462,33 +7462,33 @@ function LiveAvatar({ landmarks }) {
         y: (landmarks3D.LEFT_HIP.y + landmarks3D.RIGHT_HIP.y) / 2,
         z: (landmarks3D.LEFT_HIP.z + landmarks3D.RIGHT_HIP.z) / 2
       };
-
+      
       // Calculate shoulder center
       const shoulderCenter = {
         x: (landmarks3D.LEFT_SHOULDER.x + landmarks3D.RIGHT_SHOULDER.x) / 2,
         y: (landmarks3D.LEFT_SHOULDER.y + landmarks3D.RIGHT_SHOULDER.y) / 2,
         z: (landmarks3D.LEFT_SHOULDER.z + landmarks3D.RIGHT_SHOULDER.z) / 2
       };
-
+      
       // Spine vector (from hips to shoulders)
       const spineVec = {
         x: shoulderCenter.x - hipCenter.x,
         y: shoulderCenter.y - hipCenter.y,
         z: shoulderCenter.z - hipCenter.z
       };
-
+      
       // Apply to spine bone if exists
       const spineBone = nodes.mixamorigSpine || nodes.Spine || nodes.spine;
       if (spineBone) {
         const spineRotation = Math.atan2(spineVec.x, spineVec.y) * 0.5;
         spineBone.rotation.z = spineRotation;
-
+        
         // Forward/backward tilt
         const spineLength = Math.sqrt(spineVec.x * spineVec.x + spineVec.y * spineVec.y + spineVec.z * spineVec.z);
         const spineTilt = Math.asin(spineVec.z / spineLength) * 0.5;
         spineBone.rotation.x = spineTilt;
       }
-
+      
       // Hip rotation (based on hip positions)
       const hipBone = nodes.mixamorigHips || nodes.Hips || nodes.hips;
       if (hipBone) {
@@ -7499,18 +7499,18 @@ function LiveAvatar({ landmarks }) {
         hipBone.rotation.y = hipRotation;
       }
     }
-
+    
     // 2. ARM TRACKING - IMPROVED
     const processArm = (side) => {
       const upperKey = `${side}_SHOULDER`;
       const midKey = `${side}_ELBOW`;
       const endKey = `${side}_WRIST`;
-
+      
       if (landmarks3D[upperKey] && landmarks3D[midKey] && landmarks3D[endKey]) {
         // Get arm bones
         const upperArmBone = nodes[`mixamorig${side}Arm`] || nodes[`${side}Arm`];
         const forearmBone = nodes[`mixamorig${side}ForeArm`] || nodes[`${side}ForeArm`];
-
+        
         if (upperArmBone && forearmBone) {
           // Calculate vectors for each arm segment
           const upperArmVec = {
@@ -7518,18 +7518,18 @@ function LiveAvatar({ landmarks }) {
             y: landmarks3D[midKey].y - landmarks3D[upperKey].y,
             z: landmarks3D[midKey].z - landmarks3D[upperKey].z
           };
-
+          
           const forearmVec = {
             x: landmarks3D[endKey].x - landmarks3D[midKey].x,
             y: landmarks3D[endKey].y - landmarks3D[midKey].y,
             z: landmarks3D[endKey].z - landmarks3D[midKey].z
           };
-
+          
           // Calculate angles
           const upperArmAngleX = Math.atan2(upperArmVec.y, upperArmVec.z) * 1.5;
           const upperArmAngleY = Math.atan2(upperArmVec.x, upperArmVec.z) * 1.5;
           const upperArmAngleZ = Math.atan2(upperArmVec.x, upperArmVec.y) * 0.5;
-
+          
           // Apply to upper arm
           upperArmBone.rotation.x = THREE.MathUtils.lerp(
             upperArmBone.rotation.x,
@@ -7546,11 +7546,11 @@ function LiveAvatar({ landmarks }) {
             upperArmAngleZ,
             0.3
           );
-
+          
           // Calculate forearm angles relative to upper arm
           const forearmAngleX = Math.atan2(forearmVec.y, forearmVec.z) * 1.5;
           const forearmAngleZ = Math.atan2(forearmVec.x, forearmVec.y) * 0.5;
-
+          
           // Apply to forearm
           forearmBone.rotation.x = THREE.MathUtils.lerp(
             forearmBone.rotation.x,
@@ -7565,10 +7565,10 @@ function LiveAvatar({ landmarks }) {
         }
       }
     };
-
+    
     processArm("LEFT");
     processArm("RIGHT");
-
+    
     // 3. HEAD TRACKING
     if (landmarks3D.LEFT_EAR && landmarks3D.RIGHT_EAR && landmarks3D.NOSE) {
       const headBone = nodes.mixamorigHead || nodes.Head || nodes.head;
@@ -7578,29 +7578,29 @@ function LiveAvatar({ landmarks }) {
           landmarks3D.RIGHT_EAR.y - landmarks3D.LEFT_EAR.y,
           landmarks3D.RIGHT_EAR.x - landmarks3D.LEFT_EAR.x
         ) * 0.5;
-
+        
         // Head rotation based on nose position relative to shoulders
         if (landmarks3D.LEFT_SHOULDER && landmarks3D.RIGHT_SHOULDER) {
           const shoulderCenterX = (landmarks3D.LEFT_SHOULDER.x + landmarks3D.RIGHT_SHOULDER.x) / 2;
           const headRotation = (landmarks3D.NOSE.x - shoulderCenterX) * 2;
-
+          
           headBone.rotation.y = THREE.MathUtils.lerp(headBone.rotation.y, headRotation, 0.3);
         }
-
+        
         headBone.rotation.z = THREE.MathUtils.lerp(headBone.rotation.z, headTilt, 0.3);
       }
     }
-
+    
     // 4. LEG TRACKING (if available)
     const processLeg = (side) => {
       const hipKey = `${side}_HIP`;
       const kneeKey = `${side}_KNEE`;
       const ankleKey = `${side}_ANKLE`;
-
+      
       if (landmarks3D[hipKey] && landmarks3D[kneeKey] && landmarks3D[ankleKey]) {
         const upperLegBone = nodes[`mixamorig${side}UpLeg`] || nodes[`${side}UpLeg`];
         const lowerLegBone = nodes[`mixamorig${side}Leg`] || nodes[`${side}Leg`];
-
+        
         if (upperLegBone && lowerLegBone) {
           // Upper leg vector
           const upperLegVec = {
@@ -7608,24 +7608,24 @@ function LiveAvatar({ landmarks }) {
             y: landmarks3D[kneeKey].y - landmarks3D[hipKey].y,
             z: landmarks3D[kneeKey].z - landmarks3D[hipKey].z
           };
-
+          
           // Lower leg vector
           const lowerLegVec = {
             x: landmarks3D[ankleKey].x - landmarks3D[kneeKey].x,
             y: landmarks3D[ankleKey].y - landmarks3D[kneeKey].y,
             z: landmarks3D[ankleKey].z - landmarks3D[kneeKey].z
           };
-
+          
           // Apply rotations
           const upperLegAngle = Math.atan2(upperLegVec.x, upperLegVec.y) * 1.5;
           const lowerLegAngle = Math.atan2(lowerLegVec.x, lowerLegVec.y) * 1.5;
-
+          
           upperLegBone.rotation.x = THREE.MathUtils.lerp(
             upperLegBone.rotation.x,
             upperLegAngle,
             0.3
           );
-
+          
           lowerLegBone.rotation.x = THREE.MathUtils.lerp(
             lowerLegBone.rotation.x,
             lowerLegAngle,
@@ -7634,16 +7634,16 @@ function LiveAvatar({ landmarks }) {
         }
       }
     };
-
+    
     processLeg("LEFT");
     processLeg("RIGHT");
-
+    
   }, [nodes, mapLandmarkToWorld, calculateRotation, calculateAngle]);
-
+  
   // Process hand tracking for fingers
   const processHandTracking = useCallback((handLandmarks, side) => {
     if (!handLandmarks || Object.keys(handLandmarks).length < 21 || !nodes) return;
-
+    
     // Map finger landmarks to bone rotations
     const fingerBones = {
       thumb: [`${side}HandThumb1`, `${side}HandThumb2`, `${side}HandThumb3`],
@@ -7652,27 +7652,27 @@ function LiveAvatar({ landmarks }) {
       ring: [`${side}HandRing1`, `${side}HandRing2`, `${side}HandRing3`],
       pinky: [`${side}HandPinky1`, `${side}HandPinky2`, `${side}HandPinky3`]
     };
-
+    
     // Process each finger
     Object.keys(fingerBones).forEach((finger, fingerIndex) => {
       const boneNames = fingerBones[finger];
       const tipIndex = [4, 8, 12, 16, 20][fingerIndex]; // MediaPipe finger tip indices
       const baseIndex = tipIndex - 2;
-
+      
       if (handLandmarks[baseIndex] && handLandmarks[tipIndex]) {
         const base = handLandmarks[baseIndex];
         const tip = handLandmarks[tipIndex];
-
+        
         // Calculate curl based on distance
         const dist = Math.sqrt(
           Math.pow(tip.x - base.x, 2) +
           Math.pow(tip.y - base.y, 2) +
           Math.pow(tip.z || 0 - (base.z || 0), 2)
         );
-
+        
         // Map distance to rotation (adjust these values based on your needs)
         const curl = THREE.MathUtils.mapLinear(dist, 0.05, 0.15, 1.5, 0);
-
+        
         // Apply to all bones in the finger
         boneNames.forEach((boneName, boneIndex) => {
           const bone = nodes[boneName];
@@ -7689,54 +7689,54 @@ function LiveAvatar({ landmarks }) {
       }
     });
   }, [nodes]);
-
+  
   // Main animation frame
   useFrame(() => {
     if (!landmarks?.pose) return;
-
+    
     // Apply smoothing to landmarks
     const smoothedLandmarks = filteredLandmarks.current.update(landmarks);
     if (!smoothedLandmarks?.pose) return;
-
+    
     // Process body tracking
     processBodyTracking(smoothedLandmarks.pose);
-
+    
     // Process hands if available
     if (smoothedLandmarks.left_hand) {
       processHandTracking(smoothedLandmarks.left_hand, "Left");
     }
-
+    
     if (smoothedLandmarks.right_hand) {
       processHandTracking(smoothedLandmarks.right_hand, "Right");
     }
-
+    
     lastLandmarksRef.current = smoothedLandmarks;
   });
-
+  
   return <primitive ref={groupRef} object={scene} scale={1.3} position={[0, 0, 0]} />;
 }
 
 
-function LandmarkDebugViewer({ landmarks }) {
+ function LandmarkDebugViewer({ landmarks }) {
   const groupRef = useRef();
   const filteredLandmarks = useRef(createFilteredLandmarks());
-
+  
   useFrame(() => {
     if (!landmarks?.pose || !groupRef.current) return;
-
+    
     // Clear previous markers
     groupRef.current.children.forEach(child => {
       if (child.userData.isMarker) {
         groupRef.current.remove(child);
       }
     });
-
+    
     // Add new markers for each landmark
     const smoothedLandmarks = filteredLandmarks.current.update(landmarks);
     if (!smoothedLandmarks?.pose) return;
-
+    
     const pose = smoothedLandmarks.pose;
-
+    
     Object.keys(pose).forEach((key, index) => {
       const landmark = pose[key];
       if (landmark) {
@@ -7744,23 +7744,23 @@ function LandmarkDebugViewer({ landmarks }) {
         const x = (landmark.x - 0.5) * 4;
         const y = -(landmark.y - 0.5) * 4;
         const z = (landmark.z || 0) * 2;
-
+        
         // Create sphere for landmark
         const geometry = new THREE.SphereGeometry(0.02, 8, 8);
-        const material = new THREE.MeshBasicMaterial({
-          color: index % 2 === 0 ? 0xff0000 : 0x00ff00
+        const material = new THREE.MeshBasicMaterial({ 
+          color: index % 2 === 0 ? 0xff0000 : 0x00ff00 
         });
         const sphere = new THREE.Mesh(geometry, material);
         sphere.position.set(x, y, z);
         sphere.userData.isMarker = true;
-
+        
         groupRef.current.add(sphere);
       }
     });
   });
-
+  
   return <group ref={groupRef} />;
-}
+ }
 
 
 export default function AvatarCanvas() {
@@ -7769,12 +7769,12 @@ export default function AvatarCanvas() {
   const [showControls, setShowControls] = useState(true);
   const [showDebug, setShowDebug] = useState(false);
   const [trackingQuality, setTrackingQuality] = useState("Good");
-
+  
   // Monitor connection and tracking quality
   useEffect(() => {
     if (landmarks) {
       setConnectionStatus("connected");
-
+      
       // Estimate tracking quality based on visible landmarks
       if (landmarks.pose) {
         const visiblePoints = Object.values(landmarks.pose).filter(p => p).length;
@@ -7787,149 +7787,142 @@ export default function AvatarCanvas() {
       setTrackingQuality("Good");
     }
   }, [landmarks]);
-
+  
   return (
     <>
       {/* Connection Status */}
       <div style={{
         position: 'absolute',
-        top: 'min(2vw, 20px)',
-        left: 'min(2vw, 20px)',
+        top: 20,
+        left: 20,
         zIndex: 100,
-        background: connectionStatus === 'connected'
-          ? 'rgba(0, 255, 100, 0.15)'
-          : 'rgba(255, 165, 0, 0.15)',
-        padding: 'clamp(8px, 1.5vw, 15px) clamp(12px, 2vw, 25px)',
-        borderRadius: 'min(1.5vw, 12px)',
-        border: `1.5px solid ${connectionStatus === 'connected' ? '#00ff64' : '#ffa500'}`,
+        background: connectionStatus === 'connected' 
+          ? 'rgba(0, 255, 100, 0.2)' 
+          : 'rgba(255, 165, 0, 0.2)',
+        padding: '10px 20px',
+        borderRadius: '10px',
+        border: `2px solid ${connectionStatus === 'connected' ? '#00ff64' : '#ffa500'}`,
         color: 'white',
         fontFamily: 'monospace',
-        backdropFilter: 'blur(12px)',
+        backdropFilter: 'blur(10px)',
         display: 'flex',
         alignItems: 'center',
-        gap: 'min(1.5vw, 12px)',
-        maxWidth: 'min(80vw, 300px)',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
+        gap: '10px',
+        minWidth: '250px'
       }}>
         <div style={{
-          width: 'min(1.2vw, 10px)',
-          height: 'min(1.2vw, 10px)',
+          width: '10px',
+          height: '10px',
           borderRadius: '50%',
           background: connectionStatus === 'connected' ? '#00ff64' : '#ffa500',
-          animation: connectionStatus === 'connected' ? 'pulse 2s infinite' : 'blink 1s infinite',
-          flexShrink: 0
+          animation: connectionStatus === 'connected' ? 'pulse 2s infinite' : 'blink 1s infinite'
         }} />
-        <div style={{ minWidth: 0 }}>
-          <div style={{ fontWeight: 'bold', fontSize: 'clamp(12px, 1.2vw, 15px)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {connectionStatus === 'connected'
-              ? '✅ LIVE TRACKING ACTIVE'
+        <div>
+          <div style={{ fontWeight: 'bold', fontSize: '14px' }}>
+            {connectionStatus === 'connected' 
+              ? '✅ LIVE TRACKING ACTIVE' 
               : '🕺 IDLE MODE'}
           </div>
           {connectionStatus === 'connected' && (
-            <div style={{ fontSize: 'clamp(10px, 1vw, 13px)', marginTop: '2px', opacity: 0.8 }}>
-              Quality: <span style={{
-                color: trackingQuality === 'Good' ? '#00ff64' :
-                  trackingQuality === 'Fair' ? '#ffaa00' : '#ff4444'
+            <div style={{ fontSize: '12px', marginTop: '2px', opacity: 0.8 }}>
+              Tracking Quality: <span style={{
+                color: trackingQuality === 'Good' ? '#00ff64' : 
+                       trackingQuality === 'Fair' ? '#ffaa00' : '#ff4444'
               }}>{trackingQuality}</span>
             </div>
           )}
           {connectionStatus === 'disconnected' && (
-            <div style={{ fontSize: 'clamp(10px, 1vw, 13px)', marginTop: '2px', opacity: 0.8, overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              Run: capture_and_send.py
+            <div style={{ fontSize: '12px', marginTop: '2px', opacity: 0.8 }}>
+              Run: python capture_and_send.py
             </div>
           )}
         </div>
       </div>
-
+      
       {/* Control Panel */}
       <div style={{
         position: 'absolute',
-        top: 'min(2vw, 20px)',
-        right: 'min(2vw, 20px)',
+        top: 20,
+        right: 20,
         zIndex: 100,
         display: 'flex',
         flexDirection: 'column',
-        gap: 'min(1vw, 10px)'
+        gap: '10px'
       }}>
         <button
           onClick={() => setShowControls(!showControls)}
           style={{
-            padding: 'clamp(6px, 1vw, 10px) clamp(10px, 1.5vw, 20px)',
-            background: 'rgba(0, 0, 0, 0.4)',
+            padding: '8px 16px',
+            background: 'rgba(0, 0, 0, 0.5)',
             color: 'white',
             border: '1px solid #00ffcc',
-            borderRadius: 'min(1vw, 8px)',
+            borderRadius: '5px',
             cursor: 'pointer',
             fontFamily: 'monospace',
-            fontSize: 'clamp(10px, 1vw, 14px)',
             backdropFilter: 'blur(10px)',
-            transition: 'all 0.3s',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
+            transition: 'all 0.3s'
           }}
-          onMouseEnter={(e) => e.target.style.background = 'rgba(0, 255, 204, 0.25)'}
-          onMouseLeave={(e) => e.target.style.background = 'rgba(0, 0, 0, 0.4)'}
+          onMouseEnter={(e) => e.target.style.background = 'rgba(0, 255, 204, 0.3)'}
+          onMouseLeave={(e) => e.target.style.background = 'rgba(0, 0, 0, 0.5)'}
         >
           {showControls ? 'Hide Controls' : 'Show Controls'}
         </button>
-
+        
         {connectionStatus === 'connected' && (
           <button
             onClick={() => setShowDebug(!showDebug)}
             style={{
-              padding: 'clamp(6px, 1vw, 10px) clamp(10px, 1.5vw, 20px)',
-              background: showDebug ? 'rgba(255, 0, 255, 0.2)' : 'rgba(0, 0, 0, 0.4)',
+              padding: '8px 16px',
+              background: showDebug ? 'rgba(255, 0, 255, 0.3)' : 'rgba(0, 0, 0, 0.5)',
               color: 'white',
               border: `1px solid ${showDebug ? '#ff00ff' : '#00ffcc'}`,
-              borderRadius: 'min(1vw, 8px)',
+              borderRadius: '5px',
               cursor: 'pointer',
               fontFamily: 'monospace',
-              fontSize: 'clamp(10px, 1vw, 14px)',
               backdropFilter: 'blur(10px)',
-              transition: 'all 0.3s',
-              boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
+              transition: 'all 0.3s'
             }}
-            onMouseEnter={(e) => !showDebug && (e.target.style.background = 'rgba(0, 255, 204, 0.25)')}
-            onMouseLeave={(e) => !showDebug && (e.target.style.background = 'rgba(0, 0, 0, 0.4)')}
+            onMouseEnter={(e) => !showDebug && (e.target.style.background = 'rgba(0, 255, 204, 0.3)')}
+            onMouseLeave={(e) => !showDebug && (e.target.style.background = 'rgba(0, 0, 0, 0.5)')}
           >
             {showDebug ? 'Hide Debug' : 'Show Debug'}
           </button>
         )}
       </div>
-
+      
       {/* Tracking Tips */}
       {connectionStatus === 'connected' && (
         <div style={{
           position: 'absolute',
-          top: 'clamp(80px, 10vh, 120px)',
-          left: 'min(2vw, 20px)',
+          top: 100,
+          left: 20,
           zIndex: 100,
-          background: 'rgba(0, 0, 0, 0.6)',
-          padding: 'clamp(10px, 1.5vw, 20px)',
-          borderRadius: 'min(1.5vw, 12px)',
+          background: 'rgba(0, 0, 0, 0.7)',
+          padding: '15px',
+          borderRadius: '10px',
           color: 'white',
           fontFamily: 'sans-serif',
-          fontSize: 'clamp(10px, 1.1vw, 14px)',
+          fontSize: '12px',
           backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(0, 255, 204, 0.2)',
-          maxWidth: 'min(80vw, 260px)',
-          boxShadow: '0 4px 15px rgba(0,0,0,0.3)'
+          border: '1px solid rgba(0, 255, 204, 0.3)',
+          maxWidth: '250px'
         }}>
-          <div style={{ fontWeight: 'bold', marginBottom: '8px', color: '#00ffcc', fontSize: 'clamp(12px, 1.2vw, 16px)' }}>
+          <div style={{ fontWeight: 'bold', marginBottom: '8px', color: '#00ffcc' }}>
             📍 Tracking Tips:
           </div>
-          <ul style={{ margin: 0, paddingLeft: '1.2vw', opacity: 0.9, lineHeight: '1.5' }}>
+          <ul style={{ margin: 0, paddingLeft: '15px', opacity: 0.9 }}>
             <li>Stand facing the camera</li>
             <li>Keep arms visible</li>
             <li>Good lighting helps</li>
-            <li>Move slowly</li>
+            <li>Move slowly for better tracking</li>
           </ul>
         </div>
       )}
-
+      
       {/* Main Canvas */}
-      <Canvas
-        camera={{
-          position: [0, 1.5, 4],
+      <Canvas 
+        camera={{ 
+          position: [0, 1.5, 4], 
           fov: 50,
           near: 0.1,
           far: 1000
@@ -7939,8 +7932,8 @@ export default function AvatarCanvas() {
       >
         {/* Lighting */}
         <ambientLight intensity={0.6} />
-        <directionalLight
-          position={[5, 10, 7]}
+        <directionalLight 
+          position={[5, 10, 7]} 
           intensity={1.2}
           castShadow
           shadow-mapSize-width={1024}
@@ -7951,40 +7944,40 @@ export default function AvatarCanvas() {
           shadow-camera-top={10}
           shadow-camera-bottom={-10}
         />
-        <directionalLight
-          position={[-5, 5, -7]}
+        <directionalLight 
+          position={[-5, 5, -7]} 
           intensity={0.6}
           color="#ffccaa"
         />
-        <hemisphereLight
+        <hemisphereLight 
           skyColor="#ffffff"
           groundColor="#888888"
           intensity={0.5}
         />
-
+        
         {/* Point light for drama */}
-        <pointLight
-          position={[0, 3, 2]}
-          color="#00ffcc"
+        <pointLight 
+          position={[0, 3, 2]} 
+          color="#00ffcc" 
           intensity={0.5}
           distance={10}
           decay={2}
         />
-
+        
         {/* Environment */}
         <Environment preset="studio" />
-
+        
         {/* Floor */}
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.5, 0]} receiveShadow>
           <planeGeometry args={[20, 20]} />
           <shadowMaterial opacity={0.3} />
-          <meshStandardMaterial
-            color="#1a1a1a"
+          <meshStandardMaterial 
+            color="#1a1a1a" 
             roughness={0.8}
             metalness={0.2}
           />
         </mesh>
-
+        
         {/* Avatar */}
         <Suspense fallback={
           <Html center>
@@ -8011,10 +8004,10 @@ export default function AvatarCanvas() {
             <IdleAvatar />
           )}
         </Suspense>
-
+        
         {/* Camera Controls */}
         {showControls && (
-          <OrbitControls
+          <OrbitControls 
             enablePan={true}
             enableZoom={true}
             enableRotate={true}
@@ -8025,13 +8018,13 @@ export default function AvatarCanvas() {
             dampingFactor={0.05}
           />
         )}
-
+        
         {/* Grid Helper */}
         {process.env.NODE_ENV === 'development' && (
           <gridHelper args={[20, 20, 0x444444, 0x888888]} />
         )}
       </Canvas>
-
+      
       {/* Instructions */}
       <div style={{
         position: 'absolute',
@@ -8053,13 +8046,13 @@ export default function AvatarCanvas() {
           {connectionStatus === 'connected' ? '🎯 Full Body Tracking' : '🕺 Idle Animation'}
         </div>
         <div style={{ fontSize: '14px', opacity: 0.8 }}>
-          {connectionStatus === 'connected'
-            ? 'Your entire body is being tracked in real-time'
+          {connectionStatus === 'connected' 
+            ? 'Your entire body is being tracked in real-time' 
             : 'Waiting for camera feed to start tracking'}
         </div>
         {showDebug && connectionStatus === 'connected' && (
-          <div style={{
-            fontSize: '12px',
+          <div style={{ 
+            fontSize: '12px', 
             marginTop: '10px',
             color: '#ff00ff',
             fontFamily: 'monospace'
@@ -8068,7 +8061,7 @@ export default function AvatarCanvas() {
           </div>
         )}
       </div>
-
+      
       {/* CSS Animations */}
       <style>{`
         @keyframes pulse {
@@ -8084,4 +8077,4 @@ export default function AvatarCanvas() {
       `}</style>
     </>
   );
-}
+ }
