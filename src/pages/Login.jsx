@@ -15,7 +15,8 @@ import {
   FaHands,
   FaVolumeUp,
   FaUsers,
-  FaKey
+  FaKey,
+  FaUserPlus // Added for the sign up button
 } from "react-icons/fa";
 
 function Login() {
@@ -101,9 +102,11 @@ function Login() {
 
     setIsSubmitting(false);
   };
-  const clickButton = () =>{
+
+  const handleSignUpClick = () => {
     navigate("/signup");
-  }
+  };
+
   const handleDemoLogin = (identifier, password) => {
     setFormData({ identifier, password });
     // Auto submit after a delay
@@ -368,100 +371,74 @@ function Login() {
               </div>
             </div>
 
-            {/* Alternative Login Options */}
-            {/* <div className="grid grid-cols-2 gap-3">
-              <button className="py-2.5 bg-gray-900/30 border border-gray-800/50 rounded-xl text-white hover:border-cyan-500/30 transition-colors text-sm">
-                <div className="flex items-center justify-center space-x-2">
-                  <FaCamera className="text-cyan-400" />
-                  <span>Camera Login</span>
-                </div>
-              </button>
-              <button className="py-2.5 bg-gray-900/30 border border-gray-800/50 rounded-xl text-white hover:border-purple-500/30 transition-colors text-sm">
-                <div className="flex items-center justify-center space-x-2">
-                  <FaHands className="text-purple-400" />
-                  <span>Sign Login</span>
-                </div>
-              </button>
-            </div> */}
+            {/* Alternative Options */}
             <div className="grid grid-cols-2 gap-3 mt-2">
-  {/* Camera Login Button */}
-  <button 
-    className="group relative overflow-hidden bg-gradient-to-br from-gray-900/40 to-gray-800/40 backdrop-blur-md border border-gray-700/50 rounded-xl py-2.5 px-3 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:border-cyan-400/40"
-    title="Login using face recognition"
-  >
-    {/* Animated Background Effect */}
-    <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-cyan-500/5 to-cyan-500/0 opacity-0 group-hover:opacity-100 group-hover:animate-shimmer"></div>
-    
-    {/* Glow Effect */}
-    <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-xl blur opacity-0 group-hover:opacity-50 transition-opacity duration-500"></div>
-    
-    <div className="relative flex items-center justify-center space-x-2">
-      {/* Icon with Pulse Animation */}
-      <div className="relative">
-        <div className="absolute w-5 h-5 bg-cyan-400/30 rounded-full animate-ping"></div>
-        <FaCamera className="text-cyan-400 text-sm group-hover:scale-110 transition-transform duration-300" />
-      </div>
-      
-      {/* Text with Gradient */}
-      <span className="text-xs font-medium bg-clip-text text-transparent bg-gradient-to-r from-gray-300 to-white group-hover:from-cyan-300 group-hover:to-white transition-all duration-300">
-        Camera Login
-      </span>
-      
-      {/* Hover Arrow Indicator */}
-      <FaArrowRight className="text-cyan-400/0 text-[10px] group-hover:text-cyan-400/100 transform -translate-x-2 group-hover:translate-x-0 transition-all duration-300" />
-    </div>
-    
-    {/* Tooltip/Label */}
-    <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-cyan-900/80 text-cyan-300 text-[8px] px-2 py-0.5 rounded-full border border-cyan-500/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-      Face Recognition
-    </div>
-  </button>
+              {/* Camera Login Button */}
+              <button 
+                className="group relative overflow-hidden bg-gradient-to-br from-gray-900/40 to-gray-800/40 backdrop-blur-md border border-gray-700/50 rounded-xl py-2.5 px-3 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:border-cyan-400/40"
+                title="Login using face recognition"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-cyan-500/5 to-cyan-500/0 opacity-0 group-hover:opacity-100 group-hover:animate-shimmer"></div>
+                
+                <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-xl blur opacity-0 group-hover:opacity-50 transition-opacity duration-500"></div>
+                
+                <div className="relative flex items-center justify-center space-x-2">
+                  <div className="relative">
+                    <div className="absolute w-5 h-5 bg-cyan-400/30 rounded-full animate-ping"></div>
+                    <FaCamera className="text-cyan-400 text-sm group-hover:scale-110 transition-transform duration-300" />
+                  </div>
+                  
+                  <span className="text-xs font-medium bg-clip-text text-transparent bg-gradient-to-r from-gray-300 to-white group-hover:from-cyan-300 group-hover:to-white transition-all duration-300">
+                    Camera Login
+                  </span>
+                  
+                  <FaArrowRight className="text-cyan-400/0 text-[10px] group-hover:text-cyan-400/100 transform -translate-x-2 group-hover:translate-x-0 transition-all duration-300" />
+                </div>
+                
+                <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-cyan-900/80 text-cyan-300 text-[8px] px-2 py-0.5 rounded-full border border-cyan-500/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                  Face Recognition
+                </div>
+              </button>
 
-  {/* Sign Language Login Button */}
-  <button onClick={clickButton()}
-    className="group relative overflow-hidden bg-gradient-to-br from-gray-900/40 to-gray-800/40 backdrop-blur-md border border-gray-700/50 rounded-xl py-2.5 px-3 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:border-purple-400/40"
-    title="Login using sign language"
-  >
-    {/* Animated Background Effect */}
-    <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-500/5 to-purple-500/0 opacity-0 group-hover:opacity-100 group-hover:animate-shimmer"></div>
-    
-    {/* Glow Effect */}
-    <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl blur opacity-0 group-hover:opacity-50 transition-opacity duration-500"></div>
-    
-    <div className="relative flex items-center justify-center space-x-2">
-      {/* Icon with Pulse Animation */}
-      <div className="relative">
-        <div className="absolute w-5 h-5 bg-purple-400/30 rounded-full animate-ping [animation-delay:500ms]"></div>
-        <FaHands className="text-purple-400 text-sm group-hover:scale-110 group-hover:rotate-12 transition-all duration-300" />
-      </div>
-      
-      {/* Text with Gradient */}
-      <span className="text-xs font-medium bg-clip-text text-transparent bg-gradient-to-r from-gray-300 to-white group-hover:from-purple-300 group-hover:to-white transition-all duration-300">
-        Sign Login
-      </span>
-      
-      {/* Hover Arrow Indicator */}
-      <FaArrowRight className="text-purple-400/0 text-[10px] group-hover:text-purple-400/100 transform -translate-x-2 group-hover:translate-x-0 transition-all duration-300" />
-    </div>
-    
-    {/* Tooltip/Label */}
-    <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-purple-900/80 text-purple-300 text-[8px] px-2 py-0.5 rounded-full border border-purple-500/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-      Gesture Login
-    </div>
-    
-    {/* Active Indicator */}
-    <div className="absolute top-1 right-1 w-1.5 h-1.5 bg-purple-500 rounded-full opacity-0 group-hover:opacity-100 animate-pulse"></div>
-  </button>
-</div>
+              {/* Sign Up Button - FIXED */}
+              <button 
+                onClick={handleSignUpClick} // CORRECTED: Pass function reference, not call it
+                className="group relative overflow-hidden bg-gradient-to-br from-gray-900/40 to-gray-800/40 backdrop-blur-md border border-gray-700/50 rounded-xl py-2.5 px-3 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:border-green-400/40"
+                title="Create new account"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-green-500/0 via-green-500/5 to-green-500/0 opacity-0 group-hover:opacity-100 group-hover:animate-shimmer"></div>
+                
+                <div className="absolute -inset-1 bg-gradient-to-r from-green-500/10 to-teal-500/10 rounded-xl blur opacity-0 group-hover:opacity-50 transition-opacity duration-500"></div>
+                
+                <div className="relative flex items-center justify-center space-x-2">
+                  <div className="relative">
+                    <div className="absolute w-5 h-5 bg-green-400/30 rounded-full animate-ping [animation-delay:500ms]"></div>
+                    <FaUserPlus className="text-green-400 text-sm group-hover:scale-110 transition-transform duration-300" />
+                  </div>
+                  
+                  <span className="text-xs font-medium bg-clip-text text-transparent bg-gradient-to-r from-gray-300 to-white group-hover:from-green-300 group-hover:to-white transition-all duration-300">
+                    Sign Up
+                  </span>
+                  
+                  <FaArrowRight className="text-green-400/0 text-[10px] group-hover:text-green-400/100 transform -translate-x-2 group-hover:translate-x-0 transition-all duration-300" />
+                </div>
+                
+                <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-green-900/80 text-green-300 text-[8px] px-2 py-0.5 rounded-full border border-green-500/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                  Create Account
+                </div>
+                
+                <div className="absolute top-1 right-1 w-1.5 h-1.5 bg-green-500 rounded-full opacity-0 group-hover:opacity-100 animate-pulse"></div>
+              </button>
+            </div>
 
-{/* Progress Indicator (Optional) */}
-<div className="mt-3 flex items-center justify-center space-x-2">
-  <div className="text-[10px] text-gray-500 flex items-center space-x-1">
-    <div className="w-1.5 h-1.5 rounded-full bg-gray-700"></div>
-    <span>Alternative login methods</span>
-    <div className="w-1.5 h-1.5 rounded-full bg-gray-700"></div>
-  </div>
-</div>
+            {/* Progress Indicator */}
+            <div className="mt-3 flex items-center justify-center space-x-2">
+              <div className="text-[10px] text-gray-500 flex items-center space-x-1">
+                <div className="w-1.5 h-1.5 rounded-full bg-gray-700"></div>
+                <span>Don't have an account? <Link to="/signup" className="text-cyan-400 hover:text-cyan-300 underline">Sign up here</Link></span>
+                <div className="w-1.5 h-1.5 rounded-full bg-gray-700"></div>
+              </div>
+            </div>
 
             {/* Footer */}
             <div className="mt-6 pt-4 border-t border-gray-800/50">
