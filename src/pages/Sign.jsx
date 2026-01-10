@@ -190,12 +190,12 @@ function SignUp() {
   <div className="text-left">
     <div className="inline-flex items-center space-x-2 mb-1.5">
       <div className="relative">
-        <div className="relative w-10 h-10 md:w-15 md:h-15 bg-gradient-to-br from-cyan-500 via-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
+        <div className="relative w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-cyan-500 via-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
           <FaUserPlus className="text-base md:text-lg" />
         </div>
       </div>
       <div>
-        <h1 className="text-2xl md:text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 tracking-tight">
+        <h1 className="text-2xl md:text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 tracking-tight">
           Join GestureLink AI
         </h1>
         <p className="text-gray-400 text-xs font-medium opacity-90">Create Account</p>
@@ -223,7 +223,7 @@ function SignUp() {
           <div className={`text-sm font-bold bg-clip-text text-transparent bg-gradient-to-r ${stat.color}`}>
             {stat.value}
           </div>
-          <p className="text-[19px] text-gray-400">{stat.label}</p>
+          <p className="text-[9px] text-gray-400">{stat.label}</p>
         </div>
       ))}
     </div>
@@ -243,10 +243,10 @@ function SignUp() {
             className={`${type.bg} backdrop-blur-md border ${formData.userType === type.id ? 'border-white/50' : type.border} rounded-lg p-1.5 text-center transition-all duration-150`}
           >
             <div className="flex flex-col items-center space-y-0.5">
-              <span className={`text-base ${formData.userType === type.id ? 'text-white' : type.color}`}>
+              <span className={`text-xs ${formData.userType === type.id ? 'text-white' : type.color}`}>
                 {type.icon}
               </span>
-              <span className="text-[19px] text-white font-medium truncate w-full">
+              <span className="text-[9px] text-white font-medium truncate w-full">
                 {type.title.split(' ')[0]}
               </span>
             </div>
