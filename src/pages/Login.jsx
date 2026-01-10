@@ -224,13 +224,6 @@ function Login() {
             <div className="absolute -top-10 -right-10 w-24 h-24 bg-cyan-500/10 rounded-full blur-3xl"></div>
             <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-purple-500/10 rounded-full blur-3xl"></div>
 
-            {/* Connection Status Badge */}
-            <div className="absolute -top-3 right-6">
-              <div className="flex items-center space-x-2 px-3 py-1.5 bg-gradient-to-r from-cyan-900/50 to-blue-900/50 backdrop-blur-sm rounded-full border border-cyan-500/30">
-                <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-[10px] text-cyan-300 font-medium">SERVER ONLINE</span>
-              </div>
-            </div>
 
             {/* Form Header */}
             <div className="text-center mb-6">
