@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useDispatch } from 'react-redux';
+import { useEffect } from "react";
 import {
   FaSignLanguage,
   FaUser,
@@ -16,11 +18,13 @@ import {
   FaVolumeUp,
   FaUsers,
   FaKey,
-  FaUserPlus // Added for the sign up button
+  FaUserPlus
 } from "react-icons/fa";
-
+import { loginUser } from '../store/slices/authSlice'; // Redux action
+import { useSelector } from "react-redux";
 function Login() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
     identifier: "",
@@ -34,6 +38,14 @@ function Login() {
 
   // Grid pattern SVG as a constant
   const gridPattern = `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`;
+
+  const { isAuthenticated } = useSelector(state => state.auth);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isAuthenticated])
 
   const stats = [
     { label: "Active Users", value: "1.2K", color: "from-blue-500 to-cyan-500" },
@@ -77,49 +89,112 @@ function Login() {
     },
   ];
 
-  const handleChange = (e) => {
+  // const handleChange = (e) => {
+  //   setFormData({ ...formData, [e.target.name]: e.target.value });
+  //   setError("");
+  // };
+
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   setIsSubmitting(true);
+
+  //   // ✅ Dummy credentials
+  //   if (
+  //     formData.identifier === "deaf_user" &&
+  //     formData.password === "password123"
+  //   ) {
+  //     localStorage.setItem("isLoggedIn", "true");
+  //     if (rememberMe) {
+  //       localStorage.setItem("rememberedUser", formData.identifier);
+  //     }
+  //     navigate("/dashboard");
+  //   } else {
+  //     setError("Invalid username or password");
+  //   }
+
+  //   setIsSubmitting(false);
+  // };
+
+  // const handleSignUpClick = () => {
+  //   navigate("/signup");
+  // };
+
+  // const handleDemoLogin = (identifier, password) => {
+  //   setFormData({ identifier, password });
+  //   // Auto submit after a delay
+  //   setTimeout(() => {
+  //     if (
+  //       identifier === "deaf_user" &&
+  //       password === "password123"
+  //     ) {
+  //       localStorage.setItem("isLoggedIn", "true");
+  //       navigate("/dashboard");
+  //     }
+  //   }, 300);
+  // };
+
+   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setError("");
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsSubmitting(true);
+  setError("");
 
-    // ✅ Dummy credentials
-    if (
-      formData.identifier === "deaf_user" &&
-      formData.password === "password123"
-    ) {
-      localStorage.setItem("isLoggedIn", "true");
+  try {
+    // Redux action dispatch karein
+    const resultAction = await dispatch(loginUser({
+      username: formData.identifier,
+      password: formData.password
+    }));
+
+    if (loginUser.fulfilled.match(resultAction)) {
+      // Successful login
       if (rememberMe) {
         localStorage.setItem("rememberedUser", formData.identifier);
       }
-      navigate("/dashboard");
+      navigate("/dashboard",{replace : true});
     } else {
-      setError("Invalid username or password");
+      // Failed login
+      setError(resultAction.payload?.error || "Invalid username or password");
     }
-
+  } catch (err) {
+    setError("Login failed. Please try again.");
+  } finally {
     setIsSubmitting(false);
+  }
   };
 
   const handleSignUpClick = () => {
     navigate("/signup");
   };
 
-  const handleDemoLogin = (identifier, password) => {
+  const handleDemoLogin = async (identifier, password) => {
     setFormData({ identifier, password });
-    // Auto submit after a delay
-    setTimeout(() => {
-      if (
-        identifier === "deaf_user" &&
-        password === "password123"
-      ) {
-        localStorage.setItem("isLoggedIn", "true");
+    setIsSubmitting(true);
+    
+    try {
+      const resultAction = await dispatch(loginUser({
+        username: identifier,
+        password: password
+      }));
+
+      if (loginUser.fulfilled.match(resultAction)) {
         navigate("/dashboard");
+      } else {
+        setError("Demo login failed");
       }
-    }, 300);
+    } catch (err) {
+      setError("Demo login failed");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  // ... rest of the JSX code remains same ...
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-950 flex items-center justify-center p-2 md:p-4 relative overflow-hidden">

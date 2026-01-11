@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useDispatch } from 'react-redux';
+import { signupUser } from "../store/slices/authSlice";
 import {
   FaSignLanguage,
   FaUser,
@@ -24,7 +26,7 @@ import {
 
 function SignUp() {
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -111,41 +113,51 @@ function SignUp() {
     setError("");
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsSubmitting(true);
+  setError("");
 
-    // Validation
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
-      setIsSubmitting(false);
-      return;
+  // Validation
+  if (formData.password !== formData.confirmPassword) {
+    setError("Passwords do not match");
+    setIsSubmitting(false);
+    return;
+  }
+
+  if (!agreeTerms) {
+    setError("You must agree to the terms and conditions");
+    setIsSubmitting(false);
+    return;
+  }
+
+  if (formData.password.length < 6) {
+    setError("Password must be at least 6 characters");
+    setIsSubmitting(false);
+    return;
+  }
+
+  try {
+    const resultAction = await dispatch(signupUser({
+      username: formData.username,
+      email: formData.email,
+      password: formData.password,
+      userType: formData.userType
+    }));
+
+    if (signupUser.fulfilled.match(resultAction)) {
+      // Successful signup
+      navigate("/login");
+    } else {
+      // Failed signup
+      setError(resultAction.payload?.error || "Signup failed");
     }
-
-    if (!agreeTerms) {
-      setError("You must agree to the terms and conditions");
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (formData.password.length < 6) {
-      setError("Password must be at least 6 characters");
-      setIsSubmitting(false);
-      return;
-    }
-
-    // ✅ Dummy signup logic
-    console.log("Signing up:", formData);
-    
-    // Simulate API call
-    setTimeout(() => {
-      navigate("/login", { 
-        state: { 
-          message: "Account created successfully! Please sign in." 
-        } 
-      });
-    }, 1500);
-  };
+  } catch (err) {
+    setError("Signup failed. Please try again.");
+  } finally {
+    setIsSubmitting(false);
+   }
+   };
 
   const handleQuickSignUp = (userType) => {
     const dummyData = {

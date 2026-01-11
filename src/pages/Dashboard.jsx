@@ -1,16 +1,17 @@
-import AvatarCanvas from "../components/AvatarCanvas";
-import Caption from "../components/Caption";
+// import AvatarCanvas from "../components/AvatarCanvas";
 import { useState } from "react";
-
+import Caption from "../components/Caption";
+import UserDashboard from "../components/UserDashboard";
 function Dashboard() {
     return (
         <div className="app-container">
             <div className="avatar-section">
-                <AvatarCanvas />
+                {/* <AvatarCanvas /> */}
+                <UserDashboard/>
             </div>
-            <div className="caption-section">
+            {/* <div className="caption-section">
                 <Caption />
-            </div>
+            </div> */}
         </div>
     );
 }
