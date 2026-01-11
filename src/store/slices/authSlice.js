@@ -1,14 +1,14 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_URL = "https://gesturelink-ai-backend.onrender.com/api/auth";
+const VITE_API_URL = import.meta.env.VITE_API_URL;
 
 /* ================= LOGIN ================= */
 export const loginUser = createAsyncThunk(
   "auth/login",
   async ({ username, password }, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${API_URL}/login`, {
+      const res = await axios.post(`${VITE_API_URL}/login`, {
         identifier: username,
         password,
       });
@@ -29,7 +29,7 @@ export const signupUser = createAsyncThunk(
   "auth/signup",
   async ({ username, email, password, userType }, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${API_URL}/signup`, {
+      const res = await axios.post(`${VITE_API_URL}/signup`, {
         username,
         email,
         password,
@@ -54,7 +54,7 @@ export const getCurrentUser = createAsyncThunk(
       const token = localStorage.getItem("access_token");
       if (!token) throw new Error("No token");
 
-      const res = await axios.get(`${API_URL}/me`, {
+      const res = await axios.get(`${VITE_API_URL}/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
