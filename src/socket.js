@@ -12,7 +12,7 @@
 
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:5000", {
+const socket = io("http://localhost:7000", {
   transports: ["websocket"],
   reconnection: true,
   reconnectionAttempts: 5,

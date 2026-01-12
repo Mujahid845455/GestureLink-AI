@@ -3,7 +3,6 @@ import { FaCheck, FaCheckDouble, FaUser, FaSignLanguage, FaVolumeUp } from 'reac
 
 const MessageBubble = ({ message, isOwn, user }) => {
   const [showTranslation, setShowTranslation] = useState(false);
-  const [showOriginal, setShowOriginal] = useState(false);
 
   const getMessageTime = (timestamp) => {
     const date = new Date(timestamp);
@@ -14,35 +13,41 @@ const MessageBubble = ({ message, isOwn, user }) => {
     switch (message.message_type) {
       case 'sign':
         return (
-          <div className="flex items-center space-x-2 text-deafcomm-blue">
+          <div className={`flex items-center space-x-2 ${isOwn ? 'text-blue-100' : 'text-blue-600 dark:text-blue-400'}`}>
             <FaSignLanguage />
-            <span>Sign language message</span>
+            <span className="font-medium text-sm">Sign language message</span>
           </div>
         );
       case 'audio':
         return (
-          <div className="flex items-center space-x-2 text-deafcomm-purple">
+          <div className={`flex items-center space-x-2 ${isOwn ? 'text-purple-100' : 'text-purple-600 dark:text-purple-400'}`}>
             <FaVolumeUp />
-            <span>Audio message</span>
+            <span className="font-medium text-sm">Audio message</span>
           </div>
         );
       default:
         return (
           <div className="space-y-2">
-            <p className="text-gray-800">{message.content}</p>
-            
+            <p className={`${isOwn ? 'text-white' : 'text-gray-800 dark:text-gray-100'} text-sm leading-relaxed`}>{message.content}</p>
+
             {/* Translation Toggle */}
             {message.translated_text && message.translated_text !== message.content && (
-              <div>
+              <div className="pt-1">
                 <button
                   onClick={() => setShowTranslation(!showTranslation)}
-                  className="text-xs text-deafcomm-blue hover:text-deafcomm-purple flex items-center space-x-1"
+                  className={`text-[10px] font-bold uppercase tracking-wider flex items-center space-x-1 transition-colors ${isOwn
+                      ? 'text-blue-100 hover:text-white'
+                      : 'text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300'
+                    }`}
                 >
                   <span>{showTranslation ? 'Hide translation' : 'Show translation'}</span>
                 </button>
                 {showTranslation && (
-                  <div className="mt-2 p-2 bg-blue-50 rounded-lg border border-blue-100">
-                    <p className="text-sm text-gray-700">{message.translated_text}</p>
+                  <div className={`mt-2 p-2 rounded-lg border text-sm ${isOwn
+                      ? 'bg-white/10 border-white/20 text-blue-50'
+                      : 'bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-800 text-gray-700 dark:text-gray-300'
+                    }`}>
+                    {message.translated_text}
                   </div>
                 )}
               </div>
@@ -53,19 +58,16 @@ const MessageBubble = ({ message, isOwn, user }) => {
   };
 
   return (
-    <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'} group`}>
-      <div className={`max-w-xs lg:max-w-md ${isOwn ? 'ml-auto' : 'mr-auto'}`}>
-        {/* Sender Info for other user's messages */}
+    <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'} group mb-4`}>
+      <div className={`max-w-[85%] md:max-w-[75%] ${isOwn ? 'ml-auto' : 'mr-auto'}`}>
+        {/* Sender Info */}
         {!isOwn && (
-          <div className="flex items-center space-x-2 mb-1">
-            <div className="w-6 h-6 bg-gradient-to-r from-deafcomm-blue to-deafcomm-purple rounded-full flex items-center justify-center">
-              <FaUser className="text-white text-xs" />
-            </div>
-            <span className="text-xs font-medium text-gray-700">
+          <div className="flex items-center space-x-2 mb-1 pl-1">
+            <span className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-tight">
               {user?.username || 'User'}
             </span>
             {user?.is_deaf && (
-              <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full">
+              <span className="text-[9px] px-1.5 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded uppercase font-bold">
                 Deaf
               </span>
             )}
@@ -74,30 +76,27 @@ const MessageBubble = ({ message, isOwn, user }) => {
 
         {/* Message Bubble */}
         <div
-          className={`rounded-2xl px-4 py-3 ${isOwn 
-            ? 'bg-deafcomm-blue text-white rounded-br-none' 
-            : 'bg-white text-gray-800 border border-gray-200 rounded-bl-none'
-          }`}
+          className={`relative rounded-2xl px-4 py-2.5 shadow-sm transition-all ${isOwn
+            ? 'bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 text-white rounded-br-sm'
+            : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-100 dark:border-gray-700 rounded-bl-sm'
+            }`}
         >
           {renderMessageContent()}
-          
+
           {/* Message Footer */}
-          <div className={`flex items-center justify-between mt-2 ${isOwn ? 'text-blue-100' : 'text-gray-500'}`}>
-            <div className="flex items-center space-x-2">
-              <span className="text-xs">{getMessageTime(message.created_at)}</span>
-              {isOwn && (
-                <div className="flex items-center">
-                  <FaCheckDouble className="text-xs" />
-                </div>
-              )}
-            </div>
-            
-            {/* Message Type Indicator */}
-            <div className="text-xs opacity-75">
-              {message.message_type === 'sign' && '👐'}
-              {message.message_type === 'audio' && '🎤'}
-              {message.message_type === 'text' && '📝'}
-            </div>
+          <div className={`flex items-center justify-end space-x-1.5 mt-1 opacity-70 ${isOwn ? 'text-blue-50' : 'text-gray-400 dark:text-gray-500'}`}>
+            <span className="text-[9px] font-medium">{getMessageTime(message.created_at)}</span>
+            {isOwn && (
+              <div className="flex items-center">
+                {message.status === 'read' ? (
+                  <FaCheckDouble className="text-[10px] text-blue-200" />
+                ) : message.status === 'delivered' ? (
+                  <FaCheckDouble className="text-[10px] opacity-50" />
+                ) : (
+                  <FaCheck className="text-[10px] opacity-50" />
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
