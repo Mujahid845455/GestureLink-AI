@@ -1,7 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:7000/api') + '/auth';
+const BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:7000/api').replace(/\/$/, '');
+// Ensure /auth is only at the end once, even if BASE_URL already includes it
+const API_URL = BASE_URL.replace(/\/auth$/, '') + '/auth';
 
 /* ================= LOGIN ================= */
 export const loginUser = createAsyncThunk(
