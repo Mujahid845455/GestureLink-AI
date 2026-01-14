@@ -1,3 +1,5 @@
+
+//TRY - 15
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useGLTF, OrbitControls, Environment, Html } from "@react-three/drei";
 import * as THREE from "three";
@@ -536,17 +538,7 @@ export default function CanvasAvatar() {
           flexShrink: 0
         }} />
         <div style={{ minWidth: 0 }}>
-          <div style={{ fontWeight: 'bold', fontSize: 'clamp(12px, 1.2vw, 15px)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            {connectionStatus === 'connected'
-              ? '✅ LIVE TRACKING ACTIVE'
-              : connectionStatus === 'waiting_for_data'
-                ? '⏳ WAITING FOR CAMERA DATA...'
-                : connectionStatus === 'paused'
-                  ? '⏸️ TRACKING PAUSED'
-                  : currentPlaybackChar
-                    ? '🎬 SIGNING MESSAGE...'
-                    : '❌ SOCKET DISCONNECTED'}
-          </div>
+
           {connectionStatus === 'connected' && landmarks && (
             <div style={{ fontSize: 'clamp(10px, 1vw, 13px)', marginTop: '2px', opacity: 0.8 }}>
               Points: {Object.keys(landmarks.pose || {}).length} | Quality: <span style={{
@@ -565,11 +557,7 @@ export default function CanvasAvatar() {
               Click "Start Tracking" to begin.
             </div>
           )}
-          {(connectionStatus === 'disconnected' || connectionStatus === 'waiting_for_data') && !currentPlaybackChar && (
-            <div style={{ fontSize: 'clamp(10px, 1vw, 13px)', marginTop: '2px', opacity: 0.8 }}>
-              {connectionStatus === 'disconnected' ? 'Attempting to reconnect...' : 'Listening for landmarks...'}
-            </div>
-          )}
+
           {currentPlaybackChar && (
             <div style={{ fontSize: 'clamp(12px, 1.2vw, 18px)', marginTop: '5px', color: '#00ffcc', fontWeight: 'bold' }}>
               Letter: {currentPlaybackChar}
@@ -725,26 +713,7 @@ export default function CanvasAvatar() {
           )}
         </button>
 
-        <button
-          onClick={() => setShowControls(!showControls)}
-          style={{
-            padding: 'clamp(6px, 1vw, 10px) clamp(10px, 1.5vw, 20px)',
-            background: 'rgba(0, 0, 0, 0.4)',
-            color: 'white',
-            border: '1px solid #00ffcc',
-            borderRadius: 'min(1vw, 8px)',
-            cursor: 'pointer',
-            fontFamily: 'monospace',
-            fontSize: 'clamp(10px, 1vw, 14px)',
-            backdropFilter: 'blur(10px)',
-            transition: 'all 0.3s',
-            boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
-          }}
-          onMouseEnter={(e) => e.target.style.background = 'rgba(0, 255, 204, 0.25)'}
-          onMouseLeave={(e) => e.target.style.background = 'rgba(0, 0, 0, 0.4)'}
-        >
-          {showControls ? 'Hide Controls' : 'Show Controls'}
-        </button>
+
 
         {connectionStatus === 'connected' && (
           <button
