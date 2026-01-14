@@ -18,7 +18,8 @@ const SignLanguageWindow = ({ onBack }) => {
     // Connect to Python backend on port 7001
     useEffect(() => {
         console.log('Connecting to Python backend...');
-        const socket = io('http://localhost:7001', {
+        const SIGN_URL = import.meta.env.VITE_SIGN_PREDICT_URL || 'http://localhost:7001';
+        const socket = io(SIGN_URL, {
             transports: ['websocket', 'polling']
         });
 
