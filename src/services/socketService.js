@@ -100,6 +100,18 @@ class SocketService {
       console.log("🔴 User offline:", userId);
       this.emitEvent('user_offline', userId);
     });
+
+    // Listen for landmarks (Real-time AI data)
+    this.socket.on("landmarks", (data) => {
+      // console.log("📡 Landmarks received"); // Too noisy for production
+      this.emitEvent('landmarks', data);
+    });
+
+    // Listen for sign detection
+    this.socket.on("sign", (data) => {
+      console.log("🖖 Sign detected:", data);
+      this.emitEvent('sign', data);
+    });
   }
 
   // Specific event subscriptors used by components
@@ -121,6 +133,14 @@ class SocketService {
 
   onUserOffline(callback) {
     return this.on('user_offline', callback);
+  }
+
+  onLandmarks(callback) {
+    return this.on('landmarks', callback);
+  }
+
+  onSign(callback) {
+    return this.on('sign', callback);
   }
 
   // Event emitter helper
@@ -195,6 +215,20 @@ class SocketService {
   markAsRead(messageId, conversationId) {
     if (this.socket?.connected) {
       this.socket.emit("mark_read", { messageId, conversationId });
+    }
+  }
+
+  startTracking() {
+    if (this.socket?.connected) {
+      console.log("📤 Sending start_tracking signal");
+      this.socket.emit("start_tracking");
+    }
+  }
+
+  stopTracking() {
+    if (this.socket?.connected) {
+      console.log("📤 Sending stop_tracking signal");
+      this.socket.emit("stop_tracking");
     }
   }
 

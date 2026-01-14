@@ -38,7 +38,7 @@
 //     const p = data.pose;
 
 //     // ===== GESTURE DETECTION LOGIC =====
-    
+
 //     // Both hands raised
 //     if (
 //       p.LEFT_WRIST?.y < p.LEFT_SHOULDER?.y &&
@@ -72,7 +72,7 @@
 //     ) {
 //       const leftToRight = Math.abs(p.LEFT_WRIST.x - p.RIGHT_SHOULDER.x);
 //       const rightToLeft = Math.abs(p.RIGHT_WRIST.x - p.LEFT_SHOULDER.x);
-      
+
 //       if (leftToRight < 0.15 && rightToLeft < 0.15) {
 //         setCaption("❌ Arms crossed");
 //         setGesture("crossed");
@@ -89,7 +89,7 @@
 //     ) {
 //       const leftDist = Math.abs(p.LEFT_WRIST.y - p.LEFT_SHOULDER.y);
 //       const rightDist = Math.abs(p.RIGHT_WRIST.y - p.RIGHT_SHOULDER.y);
-      
+
 //       if (leftDist < 0.15 && rightDist < 0.15) {
 //         setCaption("🤸 T-Pose detected");
 //         setGesture("t_pose");
@@ -113,7 +113,7 @@
 //       gap: "20px"
 //     }}>
 //       <h2 style={{ margin: 0, fontSize: "28px" }}>AI Caption</h2>
-      
+
 //       <div style={{
 //         padding: "20px",
 //         background: gesture ? "#1e5128" : "#333",
@@ -344,9 +344,8 @@ import useSign from "../hooks/useSign";
 import './Caption.css'
 
 export default function Caption() {
-  const data = useLandmarks();
-  const sign = useSign();
-  
+  const { landmarks: data, sign, sentence } = useLandmarks();
+
   const [caption, setCaption] = useState("Waiting for camera...");
   const [gesture, setGesture] = useState(null);
   const [predictionHistory, setPredictionHistory] = useState([]);
@@ -364,12 +363,12 @@ export default function Caption() {
     if (!sign) return;
 
     const now = Date.now();
-    
+
     // Debounce predictions to avoid flickering
     if (lastSignRef.current && lastSignTimeRef.current) {
       const timeDiff = now - lastSignTimeRef.current;
       const isSameSign = lastSignRef.current.letter === sign.letter;
-      
+
       // If same sign within 500ms, don't update too frequently
       if (isSameSign && timeDiff < 500) {
         return;
@@ -428,12 +427,12 @@ export default function Caption() {
     if (sign.letter !== "nothing") {
       // Add letter to current word
       setCurrentWord(prev => prev + sign.letter);
-      
+
       // Reset timeout for word completion
       if (wordTimeoutRef.current) {
         clearTimeout(wordTimeoutRef.current);
       }
-      
+
       // Set timeout to clear word after 3 seconds of inactivity
       wordTimeoutRef.current = setTimeout(() => {
         if (currentWord.trim().length > 0) {
@@ -447,7 +446,7 @@ export default function Caption() {
         clearTimeout(wordTimeoutRef.current);
       }
     };
-  }, [sign, currentWord, confidenceThreshold]);
+  }, [sign, confidenceThreshold]);
 
   // =============================
   // BODY GESTURE DETECTION
@@ -560,11 +559,11 @@ export default function Caption() {
           <span className="section-icon">🎯</span>
           <h3>Current Sign</h3>
         </div>
-        
+
         <div className="prediction-display">
           {sign && sign.letter !== "nothing" ? (
             <>
-              <div className="prediction-letter" style={{ 
+              <div className="prediction-letter" style={{
                 color: getConfidenceColor(sign.confidence),
                 borderColor: getConfidenceColor(sign.confidence)
               }}>
@@ -572,9 +571,9 @@ export default function Caption() {
               </div>
               <div className="prediction-info">
                 <div className="confidence-bar">
-                  <div 
+                  <div
                     className="confidence-fill"
-                    style={{ 
+                    style={{
                       width: `${sign.confidence * 100}%`,
                       backgroundColor: getConfidenceColor(sign.confidence)
                     }}
@@ -604,7 +603,7 @@ export default function Caption() {
         <div className="section-header">
           <span className="section-icon">📝</span>
           <h3>Current Word</h3>
-          <button 
+          <button
             className="clear-btn"
             onClick={clearCurrentWord}
             disabled={!currentWord}
@@ -612,11 +611,11 @@ export default function Caption() {
             Clear
           </button>
         </div>
-        
+
         <div className="word-display">
           {currentWord || <span className="empty-word">Type letters using ASL signs...</span>}
         </div>
-        
+
         <div className="recording-controls">
           <button
             className={`record-btn ${isRecording ? 'recording' : ''}`}
@@ -635,22 +634,43 @@ export default function Caption() {
         </div>
       </div>
 
+      {/* SENTENCE DISPLAY SECTION */}
+      <div className="word-section">
+        <div className="section-header">
+          <span className="section-icon">💬</span>
+          <h3>Predicted Sentence</h3>
+        </div>
+
+        <div className="word-display" style={{
+          minHeight: '80px',
+          fontSize: '24px',
+          background: 'linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%)',
+          border: '2px solid #00ff88'
+        }}>
+          {sentence || <span className="empty-word">Sentence will appear here as you sign...</span>}
+        </div>
+
+        <div className="recording-status" style={{ marginTop: '10px', color: '#00ff88' }}>
+          {sentence && `📝 ${sentence.length} characters`}
+        </div>
+      </div>
+
       {/* PREDICTION HISTORY */}
       <div className="history-section">
         <div className="section-header">
           <span className="section-icon">📋</span>
           <h3>Recent Predictions</h3>
         </div>
-        
+
         <div className="history-list">
           {predictionHistory.length > 0 ? (
             predictionHistory.slice().reverse().map((item, index) => (
               <div key={index} className="history-item">
                 <span className="history-letter">{item.letter}</span>
                 <div className="history-confidence">
-                  <div 
+                  <div
                     className="history-bar"
-                    style={{ 
+                    style={{
                       width: `${item.confidence * 100}%`,
                       backgroundColor: getConfidenceColor(item.confidence)
                     }}
@@ -675,7 +695,7 @@ export default function Caption() {
           <span className="section-icon">⚙️</span>
           <h3>Settings</h3>
         </div>
-        
+
         <div className="threshold-control">
           <label>
             Confidence Threshold: {(confidenceThreshold * 100).toFixed(0)}%
@@ -706,39 +726,39 @@ export default function Caption() {
           <span className="section-icon">🔧</span>
           <h3>System Status</h3>
         </div>
-        
+
         <div className="debug-info">
           <div className="debug-item">
             <span className="debug-label">Connection:</span>
             <span className="debug-value status-connected">✅ Connected</span>
           </div>
-          
+
           {data?.pose && (
             <div className="debug-item">
               <span className="debug-label">Body Landmarks:</span>
               <span className="debug-value">{Object.keys(data.pose).length} points</span>
             </div>
           )}
-          
+
           {data?.left_hand && (
             <div className="debug-item">
               <span className="debug-label">Left Hand:</span>
               <span className="debug-value">{Object.keys(data.left_hand).length} points</span>
             </div>
           )}
-          
+
           {data?.right_hand && (
             <div className="debug-item">
               <span className="debug-label">Right Hand:</span>
               <span className="debug-value">{Object.keys(data.right_hand).length} points</span>
             </div>
           )}
-          
+
           <div className="debug-item">
             <span className="debug-label">Sign Model:</span>
             <span className="debug-value status-ready">✅ Loaded</span>
           </div>
-          
+
           <div className="debug-item">
             <span className="debug-label">Frame Rate:</span>
             <span className="debug-value">~30 FPS</span>

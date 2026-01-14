@@ -1,11 +1,14 @@
 // src/components/chat/ChatWindow.js
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { FaPaperPlane, FaCamera, FaVideo, FaPhone, FaEllipsisV, FaSmile, FaImage, FaFile, FaMicrophone, FaSignLanguage, FaArrowLeft } from 'react-icons/fa';
+import { FaPaperPlane, FaCamera, FaVideo, FaPhone, FaEllipsisV, FaSmile, FaImage, FaFile, FaMicrophone, FaSignLanguage, FaArrowLeft, FaPaperclip } from 'react-icons/fa';
 import { sendMessage, getMessages } from '../../store/slices/chatSlice';
 import MessageBubble from './MessageBubble';
 import CameraFeed from '../camera/CameraFeed';
+import EmojiPicker from './EmojiPicker';
+import CameraCapture from './CameraCapture';
 import socketService from '../../services/socketService';
+import axios from 'axios';
 
 const ChatWindow = ({ conversation, currentUser, onBack, isMobile }) => {
   const dispatch = useDispatch();
@@ -15,7 +18,20 @@ const ChatWindow = ({ conversation, currentUser, onBack, isMobile }) => {
   const [message, setMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [otherUserTyping, setOtherUserTyping] = useState(false);
+  const [showASLPicker, setShowASLPicker] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showCamera, setShowCamera] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const messagesEndRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const imageInputRef = useRef(null);
+
+  // ASL Alphabet images array
+  const aslAlphabet = [
+    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+    'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+    'space', 'nothing'
+  ];
 
   // Load messages for this conversation
   useEffect(() => {
@@ -130,6 +146,180 @@ const ChatWindow = ({ conversation, currentUser, onBack, isMobile }) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage(e);
+    }
+  };
+
+  // Handle ASL image selection and send
+  const handleASLImageSelect = (letter) => {
+    const tempId = `temp_${Date.now()}`;
+
+    const messageData = {
+      content: letter,
+      type: 'asl_image',
+      imagePath: `/asl_alphabet_test/${letter}_test.jpg`,
+      tempId: tempId
+    };
+
+    // Send via Redux (which handles both HTTP and socket)
+    dispatch(sendMessage({
+      conversationId: conversation?.id,
+      message: messageData
+    }));
+
+    // Close modal
+    setShowASLPicker(false);
+  };
+
+  // Handle emoji selection
+  const handleEmojiSelect = (emoji) => {
+    setMessage(prev => prev + emoji);
+    setShowEmojiPicker(false);
+  };
+
+  // Handle file upload
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Check file size (10MB max)
+    if (file.size > 10 * 1024 * 1024) {
+      alert('File size must be less than 10MB');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const token = localStorage.getItem('token');
+      const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:7000/api').replace(/\/$/, '').replace(/\/auth$/, '');
+      const response = await axios.post(`${API_URL}/upload/file`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      // Send message with file
+      const messageData = {
+        content: file.name,
+        type: 'file',
+        mediaUrl: response.data.fileUrl,
+        fileName: response.data.fileName,
+        fileSize: response.data.fileSize,
+        mimeType: response.data.mimeType
+      };
+
+      dispatch(sendMessage({
+        conversationId: conversation?.id,
+        message: messageData
+      }));
+
+    } catch (error) {
+      console.error('File upload error:', error);
+      alert('Failed to upload file');
+    } finally {
+      setUploading(false);
+      e.target.value = ''; // Reset input
+    }
+  };
+
+  // Handle image upload
+  const handleImageUpload = async (e) => {
+    const image = e.target.files[0];
+    if (!image) return;
+
+    // Check if it's an image
+    if (!image.type.startsWith('image/')) {
+      alert('Please select an image file');
+      return;
+    }
+
+    // Check file size (5MB max)
+    if (image.size > 5 * 1024 * 1024) {
+      alert('Image size must be less than 5MB');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', image);
+
+      const token = localStorage.getItem('token');
+      const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:7000/api').replace(/\/$/, '').replace(/\/auth$/, '');
+      const response = await axios.post(`${API_URL}/upload/image`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      // Send message with image
+      const messageData = {
+        content: 'Image',
+        type: 'image',
+        mediaUrl: response.data.imageUrl,
+        fileName: response.data.fileName,
+        fileSize: response.data.fileSize,
+        mimeType: response.data.mimeType
+      };
+
+      dispatch(sendMessage({
+        conversationId: conversation?.id,
+        message: messageData
+      }));
+
+    } catch (error) {
+      console.error('Image upload error:', error);
+      alert('Failed to upload image');
+    } finally {
+      setUploading(false);
+      e.target.value = ''; // Reset input
+    }
+  };
+
+  // Handle camera capture
+  const handleCameraCapture = async (imageData) => {
+    setUploading(true);
+    try {
+      // Convert base64 to blob
+      const response = await fetch(imageData);
+      const blob = await response.blob();
+
+      const formData = new FormData();
+      formData.append('image', blob, 'camera-capture.jpg');
+
+      const token = localStorage.getItem('token');
+      const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:7000/api').replace(/\/$/, '').replace(/\/auth$/, '');
+      const uploadResponse = await axios.post(`${API_URL}/upload/image`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      // Send message with captured photo
+      const messageData = {
+        content: 'Camera Photo',
+        type: 'camera',
+        mediaUrl: uploadResponse.data.imageUrl,
+        fileName: uploadResponse.data.fileName,
+        fileSize: uploadResponse.data.fileSize,
+        mimeType: uploadResponse.data.mimeType
+      };
+
+      dispatch(sendMessage({
+        conversationId: conversation?.id,
+        message: messageData
+      }));
+
+    } catch (error) {
+      console.error('Camera capture error:', error);
+      alert('Failed to send photo');
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -250,17 +440,65 @@ const ChatWindow = ({ conversation, currentUser, onBack, isMobile }) => {
         {/* Quick Actions */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-1 md:space-x-2">
-            {[
-              { icon: <FaImage />, title: "Image" },
-              { icon: <FaFile />, title: "File" },
-              { icon: <FaSmile />, title: "Emoji" }
-            ].map((action, idx) => (
-              <button key={idx} className="p-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors" title={action.title}>
-                {action.icon}
+            {/* Hidden file inputs */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="*/*"
+              onChange={handleFileUpload}
+              style={{ display: 'none' }}
+            />
+            <input
+              ref={imageInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              style={{ display: 'none' }}
+            />
+
+            {/* Image button */}
+            <button
+              onClick={() => imageInputRef.current?.click()}
+              disabled={uploading}
+              className="p-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors disabled:opacity-50"
+              title="Upload Image"
+            >
+              <FaImage />
+            </button>
+
+            {/* File button */}
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="p-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors disabled:opacity-50"
+              title="Upload File"
+            >
+              <FaFile />
+            </button>
+
+            {/* Emoji button */}
+            <div className="relative">
+              <button
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                className="p-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                title="Emoji"
+              >
+                <FaSmile />
               </button>
-            ))}
+              {showEmojiPicker && (
+                <EmojiPicker
+                  onEmojiSelect={handleEmojiSelect}
+                  onClose={() => setShowEmojiPicker(false)}
+                />
+              )}
+            </div>
+
             {currentUser?.is_deaf && (
-              <button className="p-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors" title="Sign Language">
+              <button
+                onClick={() => setShowASLPicker(true)}
+                className="p-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                title="Sign Language"
+              >
                 <FaSignLanguage />
               </button>
             )}
@@ -269,7 +507,12 @@ const ChatWindow = ({ conversation, currentUser, onBack, isMobile }) => {
             <button className="p-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors" title="Voice Message">
               <FaMicrophone />
             </button>
-            <button className="p-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors" title="Capture">
+            <button
+              onClick={() => setShowCamera(true)}
+              disabled={uploading}
+              className="p-2 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors disabled:opacity-50"
+              title="Capture Photo"
+            >
               <FaCamera />
             </button>
           </div>
@@ -309,6 +552,78 @@ const ChatWindow = ({ conversation, currentUser, onBack, isMobile }) => {
           )}
         </div>
       </div>
+
+      {/* ASL Alphabet Picker Modal */}
+      {showASLPicker && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => setShowASLPicker(false)}
+        >
+          <div
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-4 md:p-6 border-b border-gray-200 dark:border-gray-700">
+              <div>
+                <h3 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
+                  ASL Alphabet
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  Select a sign to send
+                </p>
+              </div>
+              <button
+                onClick={() => setShowASLPicker(false)}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              >
+                <svg className="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Modal Body - Image Grid */}
+            <div className="p-4 md:p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 md:gap-4">
+                {aslAlphabet.map((letter) => (
+                  <button
+                    key={letter}
+                    onClick={() => handleASLImageSelect(letter)}
+                    className="group relative aspect-square rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 hover:ring-4 hover:ring-blue-500/50 transition-all duration-200 hover:scale-105"
+                  >
+                    <img
+                      src={`/asl_alphabet_test/${letter}_test.jpg`}
+                      alt={`ASL ${letter}`}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                      <div className="absolute bottom-0 left-0 right-0 p-2 text-center">
+                        <span className="text-white font-bold text-lg uppercase">
+                          {letter}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="absolute top-2 left-2 bg-white/90 dark:bg-gray-800/90 px-2 py-1 rounded-md">
+                      <span className="text-xs font-semibold text-gray-900 dark:text-white uppercase">
+                        {letter}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Camera Capture Modal */}
+      {showCamera && (
+        <CameraCapture
+          onCapture={handleCameraCapture}
+          onClose={() => setShowCamera(false)}
+        />
+      )}
     </div>
   );
 };

@@ -10,7 +10,23 @@ const MessageBubble = ({ message, isOwn, user }) => {
   };
 
   const renderMessageContent = () => {
-    switch (message.message_type) {
+    switch (message.message_type || message.type) {
+      case 'asl_image':
+        return (
+          <div className="space-y-2">
+            <div className="relative rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700">
+              <img
+                src={message.imagePath || `/asl_alphabet_test/${message.content}_test.jpg`}
+                alt={`ASL ${message.content}`}
+                className="w-full max-w-[200px] h-auto object-cover"
+              />
+            </div>
+            <div className={`flex items-center space-x-2 ${isOwn ? 'text-blue-100' : 'text-blue-600 dark:text-blue-400'}`}>
+              <FaSignLanguage />
+              <span className="font-bold text-lg uppercase">{message.content}</span>
+            </div>
+          </div>
+        );
       case 'sign':
         return (
           <div className={`flex items-center space-x-2 ${isOwn ? 'text-blue-100' : 'text-blue-600 dark:text-blue-400'}`}>
@@ -36,16 +52,16 @@ const MessageBubble = ({ message, isOwn, user }) => {
                 <button
                   onClick={() => setShowTranslation(!showTranslation)}
                   className={`text-[10px] font-bold uppercase tracking-wider flex items-center space-x-1 transition-colors ${isOwn
-                      ? 'text-blue-100 hover:text-white'
-                      : 'text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300'
+                    ? 'text-blue-100 hover:text-white'
+                    : 'text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300'
                     }`}
                 >
                   <span>{showTranslation ? 'Hide translation' : 'Show translation'}</span>
                 </button>
                 {showTranslation && (
                   <div className={`mt-2 p-2 rounded-lg border text-sm ${isOwn
-                      ? 'bg-white/10 border-white/20 text-blue-50'
-                      : 'bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-800 text-gray-700 dark:text-gray-300'
+                    ? 'bg-white/10 border-white/20 text-blue-50'
+                    : 'bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-800 text-gray-700 dark:text-gray-300'
                     }`}>
                     {message.translated_text}
                   </div>

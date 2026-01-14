@@ -7360,8 +7360,22 @@ import * as THREE from "three";
 import { useEffect, useRef, useState, Suspense, useCallback } from "react";
 import useLandmarks from "../hooks/useLandmarks";
 import { createFilteredLandmarks } from "../utils/smoothing";
+import { ALPHABET_POSES, applySignPose } from "../utils/signAnimations";
+import socketService from "../services/socketService";
 import "../../src/App.css";
 import Caption from "./Caption";
+
+// Landmark mapping for MediaPipe indices
+const POSE_MAP = {
+  "0": "NOSE",
+  "11": "LEFT_SHOULDER", "12": "RIGHT_SHOULDER",
+  "13": "LEFT_ELBOW", "14": "RIGHT_ELBOW",
+  "15": "LEFT_WRIST", "16": "RIGHT_WRIST",
+  "23": "LEFT_HIP", "24": "RIGHT_HIP",
+  "25": "LEFT_KNEE", "26": "RIGHT_KNEE",
+  "27": "LEFT_ANKLE", "28": "RIGHT_ANKLE",
+  "7": "LEFT_EAR", "8": "RIGHT_EAR"
+};
 
 useGLTF.preload("/models/standing.glb");
 
@@ -7390,7 +7404,7 @@ function IdleAvatar() {
 }
 
 
-function LiveAvatar({ landmarks }) {
+function LiveAvatar({ landmarks, playbackChar }) {
   const { scene, nodes } = useGLTF("/models/standing.glb");
   const groupRef = useRef();
   const filteredLandmarks = useRef(createFilteredLandmarks());
@@ -7451,8 +7465,9 @@ function LiveAvatar({ landmarks }) {
 
     // Map all key landmarks to world coordinates
     const landmarks3D = {};
-    Object.keys(pose).forEach(key => {
-      landmarks3D[key] = mapLandmarkToWorld(pose[key]);
+    Object.entries(pose).forEach(([key, landmark]) => {
+      const name = POSE_MAP[key] || key;
+      landmarks3D[name] = mapLandmarkToWorld(landmark);
     });
 
     // 1. SPINE & HIP TRACKING
@@ -7693,6 +7708,13 @@ function LiveAvatar({ landmarks }) {
 
   // Main animation frame
   useFrame(() => {
+    // ===== PLAYBACK MODE (Text-to-Sign) =====
+    if (playbackChar && nodes) {
+      applySignPose(nodes, playbackChar, null, 0.15);
+      return;
+    }
+
+    // ===== LIVE TRACKING MODE =====
     if (!landmarks?.pose) return;
 
     // Apply smoothing to landmarks
@@ -7765,29 +7787,78 @@ function LandmarkDebugViewer({ landmarks }) {
 
 
 export default function CanvasAvatar() {
-  const landmarks = useLandmarks();
+  const { landmarks, sign, sentence } = useLandmarks();
   const [connectionStatus, setConnectionStatus] = useState("disconnected");
   const [showControls, setShowControls] = useState(true);
   const [showDebug, setShowDebug] = useState(false);
   const [trackingQuality, setTrackingQuality] = useState("Good");
 
-  // Monitor connection and tracking quality
-  useEffect(() => {
-    if (landmarks) {
-      setConnectionStatus("connected");
+  // Text-to-Sign Playback State
+  const [playbackQueue, setPlaybackQueue] = useState([]);
+  const [currentPlaybackChar, setCurrentPlaybackChar] = useState(null);
+  const [isTrackingActive, setIsTrackingActive] = useState(false);
 
-      // Estimate tracking quality based on visible landmarks
-      if (landmarks.pose) {
-        const visiblePoints = Object.values(landmarks.pose).filter(p => p).length;
-        if (visiblePoints < 10) setTrackingQuality("Poor");
-        else if (visiblePoints < 20) setTrackingQuality("Fair");
-        else setTrackingQuality("Good");
+  useEffect(() => {
+    const checkSocket = () => {
+      const isConnected = socketService.isConnected();
+      if (landmarks && isTrackingActive) {
+        setConnectionStatus("connected");
+      } else if (isConnected) {
+        setConnectionStatus(isTrackingActive ? "waiting_for_data" : "paused");
+      } else {
+        setConnectionStatus("disconnected");
       }
-    } else {
-      setConnectionStatus("disconnected");
-      setTrackingQuality("Good");
+    };
+
+    checkSocket();
+    const timer = setInterval(checkSocket, 2000); // Poll connection status
+
+    if (landmarks && landmarks.pose && isTrackingActive) {
+      // Estimate tracking quality based on visible landmarks
+      const visiblePoints = Object.values(landmarks.pose).filter(p => p).length;
+      if (visiblePoints < 10) setTrackingQuality("Poor");
+      else if (visiblePoints < 20) setTrackingQuality("Fair");
+      else setTrackingQuality("Good");
+
+      // Stop playback if live tracking starts
+      setPlaybackQueue([]);
+      setCurrentPlaybackChar(null);
     }
+
+    return () => clearInterval(timer);
   }, [landmarks]);
+
+  // Listen for new messages for Text-to-Sign
+  useEffect(() => {
+    const handleNewMessage = (data) => {
+      if (data.type === 'text' && data.content) {
+        console.log("🎬 Queuing text for sign playback:", data.content);
+        const chars = data.content.toUpperCase().split('').filter(c => ALPHABET_POSES[c]);
+        if (chars.length > 0) {
+          setPlaybackQueue(prev => [...prev, ...chars]);
+        }
+      }
+    };
+
+    const unsub = socketService.onNewMessage(handleNewMessage);
+    return () => unsub();
+  }, []);
+
+  // Process playback queue
+  useEffect(() => {
+    if (playbackQueue.length > 0 && !currentPlaybackChar) {
+      const nextChar = playbackQueue[0];
+      setCurrentPlaybackChar(nextChar);
+
+      // Show each sign for 1 second
+      const timer = setTimeout(() => {
+        setPlaybackQueue(prev => prev.slice(1));
+        setCurrentPlaybackChar(null);
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [playbackQueue, currentPlaybackChar]);
 
   return (
     <>
@@ -7824,22 +7895,138 @@ export default function CanvasAvatar() {
           <div style={{ fontWeight: 'bold', fontSize: 'clamp(12px, 1.2vw, 15px)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {connectionStatus === 'connected'
               ? '✅ LIVE TRACKING ACTIVE'
-              : '🕺 IDLE MODE'}
+              : connectionStatus === 'waiting_for_data'
+                ? '⏳ WAITING FOR CAMERA DATA...'
+                : connectionStatus === 'paused'
+                  ? '⏸️ TRACKING PAUSED'
+                  : currentPlaybackChar
+                    ? '🎬 SIGNING MESSAGE...'
+                    : '❌ SOCKET DISCONNECTED'}
           </div>
-          {connectionStatus === 'connected' && (
+          {connectionStatus === 'connected' && landmarks && (
             <div style={{ fontSize: 'clamp(10px, 1vw, 13px)', marginTop: '2px', opacity: 0.8 }}>
-              Quality: <span style={{
+              Points: {Object.keys(landmarks.pose || {}).length} | Quality: <span style={{
                 color: trackingQuality === 'Good' ? '#00ff64' :
                   trackingQuality === 'Fair' ? '#ffaa00' : '#ff4444'
               }}>{trackingQuality}</span>
             </div>
           )}
-          {connectionStatus === 'disconnected' && (
-            <div style={{ fontSize: 'clamp(10px, 1vw, 13px)', marginTop: '2px', opacity: 0.8, overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              Run
+          {connectionStatus === 'waiting_for_data' && (
+            <div style={{ fontSize: 'clamp(10px, 1vw, 13px)', marginTop: '2px', opacity: 0.8 }}>
+              Socket OK. Please start capture script.
+            </div>
+          )}
+          {connectionStatus === 'paused' && (
+            <div style={{ fontSize: 'clamp(10px, 1vw, 13px)', marginTop: '2px', opacity: 0.8 }}>
+              Click "Start Tracking" to begin.
+            </div>
+          )}
+          {(connectionStatus === 'disconnected' || connectionStatus === 'waiting_for_data') && !currentPlaybackChar && (
+            <div style={{ fontSize: 'clamp(10px, 1vw, 13px)', marginTop: '2px', opacity: 0.8 }}>
+              {connectionStatus === 'disconnected' ? 'Attempting to reconnect...' : 'Listening for landmarks...'}
+            </div>
+          )}
+          {currentPlaybackChar && (
+            <div style={{ fontSize: 'clamp(12px, 1.2vw, 18px)', marginTop: '5px', color: '#00ffcc', fontWeight: 'bold' }}>
+              Letter: {currentPlaybackChar}
             </div>
           )}
         </div>
+      </div>
+
+      {/* Predicted Sentence Overlay */}
+      {sentence && connectionStatus === 'connected' && (
+        <div style={{
+          position: 'absolute',
+          top: '20px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 100,
+          background: 'rgba(0, 0, 0, 0.9)',
+          padding: '20px 40px',
+          borderRadius: '15px',
+          border: '2px solid #00ff88',
+          textAlign: 'center',
+          minWidth: '300px',
+          maxWidth: '80%',
+          backdropFilter: 'blur(10px)',
+          boxShadow: '0 0 30px rgba(0, 255, 136, 0.4)',
+          animation: 'fadeIn 0.3s'
+        }}>
+          <div style={{ fontSize: '12px', color: '#888', marginBottom: '8px', letterSpacing: '1px' }}>PREDICTED SENTENCE</div>
+          <div style={{ fontSize: 'clamp(18px, 2vw, 28px)', fontWeight: 'bold', color: '#00ff88', lineHeight: 1.4, wordBreak: 'break-word' }}>
+            {sentence || "..."}
+          </div>
+        </div>
+      )}
+
+      {/* Predicted Sign Overlay (Case 1) */}
+      {sign && connectionStatus === 'connected' && sign.letter !== 'nothing' && (
+        <div style={{
+          position: 'absolute',
+          bottom: '120px',
+          right: '20px',
+          zIndex: 100,
+          background: 'rgba(0, 0, 0, 0.8)',
+          padding: '20px',
+          borderRadius: '15px',
+          border: '2px solid #00ffcc',
+          textAlign: 'center',
+          minWidth: '120px',
+          backdropFilter: 'blur(10px)',
+          boxShadow: '0 0 30px rgba(0, 255, 204, 0.3)',
+          animation: 'fadeIn 0.3s'
+        }}>
+          <div style={{ fontSize: '12px', color: '#888', marginBottom: '5px' }}>DETECTED SIGN</div>
+          <div style={{ fontSize: '64px', fontWeight: 'bold', color: '#00ffcc', lineHeight: 1 }}>
+            {sign.letter}
+          </div>
+          <div style={{ fontSize: '14px', color: '#aaa', marginTop: '5px' }}>
+            {(sign.confidence * 100).toFixed(0)}% confidence
+          </div>
+        </div>
+      )}
+
+      {/* Dashboard Button - Below Tracking Tips */}
+      <div style={{
+        position: 'absolute',
+        top: 'clamp(260px, 32vh, 320px)',
+        left: 'min(2vw, 20px)',
+        zIndex: 100
+      }}>
+        <button
+          onClick={() => window.location.href = '/dashboard'}
+          style={{
+            padding: 'clamp(10px, 1.5vw, 15px) clamp(15px, 2vw, 25px)',
+            background: 'rgba(0, 0, 0, 0.6)',
+            color: 'white',
+            border: '1px solid rgba(0, 255, 204, 0.3)',
+            borderRadius: 'min(1.5vw, 12px)',
+            cursor: 'pointer',
+            fontFamily: 'sans-serif',
+            fontWeight: 'bold',
+            fontSize: 'clamp(11px, 1.1vw, 14px)',
+            backdropFilter: 'blur(10px)',
+            transition: 'all 0.3s',
+            boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px'
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.background = 'rgba(0, 255, 204, 0.15)';
+            e.target.style.borderColor = 'rgba(0, 255, 204, 0.5)';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.background = 'rgba(0, 0, 0, 0.6)';
+            e.target.style.borderColor = 'rgba(0, 255, 204, 0.3)';
+          }}
+          title="Back to Dashboard"
+        >
+          <span style={{ fontSize: 'clamp(14px, 1.5vw, 18px)' }}></span>
+          <span>Back to Dashboard</span>
+        </button>
       </div>
 
       {/* Control Panel */}
@@ -7852,6 +8039,48 @@ export default function CanvasAvatar() {
         flexDirection: 'column',
         gap: 'min(1vw, 10px)'
       }}>
+        <button
+          onClick={() => {
+            const nextState = !isTrackingActive;
+            setIsTrackingActive(nextState);
+            if (nextState) {
+              socketService.startTracking();
+            } else {
+              socketService.stopTracking();
+            }
+          }}
+          style={{
+            padding: 'clamp(8px, 1.2vw, 12px) clamp(15px, 2vw, 30px)',
+            background: isTrackingActive ? 'rgba(255, 0, 0, 0.6)' : 'rgba(0, 255, 100, 0.6)',
+            color: 'white',
+            border: 'none',
+            borderRadius: 'min(1vw, 8px)',
+            cursor: 'pointer',
+            fontFamily: 'monospace',
+            fontWeight: 'bold',
+            fontSize: 'clamp(12px, 1.2vw, 16px)',
+            backdropFilter: 'blur(10px)',
+            transition: 'all 0.3s',
+            boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px'
+          }}
+        >
+          {isTrackingActive ? (
+            <>
+              <span style={{ width: 10, height: 10, background: 'white', borderRadius: 2 }} />
+              STOP TRACKING
+            </>
+          ) : (
+            <>
+              <span style={{ width: 0, height: 0, borderTop: '6px solid transparent', borderBottom: '6px solid transparent', borderLeft: '10px solid white' }} />
+              START TRACKING
+            </>
+          )}
+        </button>
+
         <button
           onClick={() => setShowControls(!showControls)}
           style={{
@@ -8003,10 +8232,13 @@ export default function CanvasAvatar() {
             </div>
           </Html>
         }>
-          {landmarks ? (
+          {(landmarks && isTrackingActive) || currentPlaybackChar ? (
             <>
-              <LiveAvatar landmarks={landmarks} />
-              {showDebug && <LandmarkDebugViewer landmarks={landmarks} />}
+              <LiveAvatar
+                landmarks={isTrackingActive ? landmarks : null}
+                playbackChar={currentPlaybackChar}
+              />
+              {showDebug && landmarks && isTrackingActive && <LandmarkDebugViewer landmarks={landmarks} />}
             </>
           ) : (
             <IdleAvatar />
@@ -8083,7 +8315,7 @@ export default function CanvasAvatar() {
           50% { opacity: 0.3; }
         }
       `}</style>
-      
+
     </>
   );
 }

@@ -19,7 +19,9 @@ import {
   FaRobot,
   FaBars,
   FaArrowLeft,
-  FaHome
+  FaHome,
+  FaBrain,
+  FaGraduationCap
 } from 'react-icons/fa';
 import { getCurrentUser, logout } from '../store/slices/authSlice';
 import { getConversations, getUsers, createConversation, updateUserStatus } from '../store/slices/chatSlice';
@@ -28,6 +30,10 @@ import ConversationList from '../components/chat/ConversationList';
 import ChatWindow from '../components/chat/ChatWindow';
 import UserList from '../components/chat/UserList';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import TextToSpeechWindow from '../components/tts/TextToSpeechWindow';
+import SignLanguageWindow from '../components/signing/SignLanguageWindow';
+import LearningWindow from '../components/learning/LearningWindow';
+import TextToSignWindow from '../components/signing/TextToSignWindow';
 import socketService from '../services/socketService';
 
 const UserDashboard = () => {
@@ -45,6 +51,10 @@ const UserDashboard = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const [socketConnected, setSocketConnected] = useState(false);
+  const [showTTSWindow, setShowTTSWindow] = useState(false);
+  const [showSignWindow, setShowSignWindow] = useState(false);
+  const [showLearningWindow, setShowLearningWindow] = useState(false);
+  const [showTextToSignWindow, setShowTextToSignWindow] = useState(false);
 
   // Check mobile screen size
   useEffect(() => {
@@ -315,6 +325,61 @@ const UserDashboard = () => {
     setSearchQuery('');
   }, []);
 
+  // Text-to-Speech functions
+  const handleSpeak = () => {
+    if (!ttsText.trim()) return;
+
+    const synth = window.speechSynthesis;
+    synth.cancel(); // Stop any ongoing speech
+
+    const utterance = new SpeechSynthesisUtterance(ttsText);
+    utterance.voice = selectedVoice;
+    utterance.rate = speechRate;
+    utterance.pitch = speechPitch;
+
+    utterance.onstart = () => {
+      setIsSpeaking(true);
+      setIsPaused(false);
+    };
+
+    utterance.onend = () => {
+      setIsSpeaking(false);
+      setIsPaused(false);
+    };
+
+    utterance.onerror = (event) => {
+      console.error('Speech error:', event);
+      setIsSpeaking(false);
+      setIsPaused(false);
+    };
+
+    synth.speak(utterance);
+  };
+
+  const handlePause = () => {
+    window.speechSynthesis.pause();
+    setIsPaused(true);
+  };
+
+  const handleResume = () => {
+    window.speechSynthesis.resume();
+    setIsPaused(false);
+  };
+
+  const handleStop = () => {
+    window.speechSynthesis.cancel();
+    setIsSpeaking(false);
+    setIsPaused(false);
+  };
+
+  const handleClearText = () => {
+    setTtsText('');
+  };
+
+  const handleSampleText = () => {
+    setTtsText('Hello! This is a sample text for testing the text-to-speech feature. You can adjust the voice, speed, and pitch to customize the speech output.');
+  };
+
   const handleBackToDashboard = useCallback(() => {
     console.log('handleBackToDashboard - Going back to dashboard');
 
@@ -389,17 +454,66 @@ const UserDashboard = () => {
               </div>
             </div>
           </div>
-          <button
-            onClick={handleLogout}
-            className="px-3 py-1.5 text-sm bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50"
-          >
-            Logout
-          </button>
+
+          {/* Mobile Icons - Learning and Text-to-Sign */}
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => {
+                setShowTextToSignWindow(true);
+                setShowLearningWindow(false);
+                setShowSignWindow(false);
+                setShowTTSWindow(false);
+                setSelectedConversation(null);
+              }}
+              className="p-2 rounded-full bg-purple-100 dark:bg-purple-900/30 hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors"
+              title="Text to Sign Language"
+            >
+              <FaBrain className="text-purple-600 dark:text-purple-400 text-lg" />
+            </button>
+
+            <button
+              onClick={() => {
+                setShowLearningWindow(true);
+                setShowTextToSignWindow(false);
+                setShowSignWindow(false);
+                setShowTTSWindow(false);
+                setSelectedConversation(null);
+              }}
+              className="p-2 rounded-full bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
+              title="Learning & Tutorials"
+            >
+              <FaGraduationCap className="text-blue-600 dark:text-blue-400 text-lg" />
+            </button>
+
+            <button
+              onClick={handleLogout}
+              className="px-3 py-1.5 text-sm bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50"
+            >
+              Logout
+            </button>
+          </div>
         </div>
       )}
 
       {/* Desktop Header */}
-      {!isMobile && <Header onLogout={handleLogout} user={user} />}
+      {!isMobile && <Header
+        onLogout={handleLogout}
+        user={user}
+        onLearningClick={() => {
+          setShowLearningWindow(true);
+          setShowTextToSignWindow(false);
+          setShowSignWindow(false);
+          setShowTTSWindow(false);
+          setSelectedConversation(null);
+        }}
+        onTextToSignClick={() => {
+          setShowTextToSignWindow(true);
+          setShowLearningWindow(false);
+          setShowSignWindow(false);
+          setShowTTSWindow(false);
+          setSelectedConversation(null);
+        }}
+      />}
 
       <div className={`flex flex-1 overflow-hidden ${isMobile && !selectedConversation ? 'pt-16' : ''}`}>
         {/* Mobile Sidebar Overlay */}
@@ -433,7 +547,7 @@ const UserDashboard = () => {
               onClick={() => setShowMobileSidebar(false)}
               className="absolute top-2 right-2 p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
             >
-              <FaTimes className="h-5 w-5" />
+              {/* <FaTimes className="h-5 w-5" /> */}
             </button>
           )}
 
@@ -638,7 +752,31 @@ const UserDashboard = () => {
             : ''
           }
         `}>
-          {selectedConversation ? (
+          {showTextToSignWindow ? (
+            <div className="flex-1 flex flex-col h-full">
+              <TextToSignWindow
+                onBack={() => setShowTextToSignWindow(false)}
+              />
+            </div>
+          ) : showLearningWindow ? (
+            <div className="flex-1 flex flex-col h-full">
+              <LearningWindow
+                onBack={() => setShowLearningWindow(false)}
+              />
+            </div>
+          ) : showSignWindow ? (
+            <div className="flex-1 flex flex-col h-full">
+              <SignLanguageWindow
+                onBack={() => setShowSignWindow(false)}
+              />
+            </div>
+          ) : showTTSWindow ? (
+            <div className="flex-1 flex flex-col h-full">
+              <TextToSpeechWindow
+                onBack={() => setShowTTSWindow(false)}
+              />
+            </div>
+          ) : selectedConversation ? (
             <div className="flex-1 flex flex-col h-full">
               <ChatWindow
                 conversation={selectedConversation}
@@ -700,7 +838,7 @@ const UserDashboard = () => {
                       description: 'Use your webcam for real-time sign language recognition',
                       gradient: 'from-blue-500 to-blue-600',
                       bg: 'bg-blue-50 dark:bg-blue-900/20',
-                      onClick: () => { }
+                      onClick: () => setShowSignWindow(true)
                     },
                     {
                       icon: <FaMicrophone className="text-xl md:text-2xl" />,
@@ -708,7 +846,7 @@ const UserDashboard = () => {
                       description: 'Convert text messages to natural sounding speech',
                       gradient: 'from-purple-500 to-purple-600',
                       bg: 'bg-purple-50 dark:bg-purple-900/20',
-                      onClick: () => { }
+                      onClick: () => setShowTTSWindow(true)
                     },
                     {
                       icon: <FaRobot className="text-xl md:text-2xl" />,
