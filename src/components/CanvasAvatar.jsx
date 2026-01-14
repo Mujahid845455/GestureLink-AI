@@ -552,11 +552,7 @@ export default function CanvasAvatar() {
               Socket OK. Please start capture script.
             </div>
           )}
-          {connectionStatus === 'paused' && (
-            <div style={{ fontSize: 'clamp(10px, 1vw, 13px)', marginTop: '2px', opacity: 0.8 }}>
-              Click "Start Tracking" to begin.
-            </div>
-          )}
+
 
           {currentPlaybackChar && (
             <div style={{ fontSize: 'clamp(12px, 1.2vw, 18px)', marginTop: '5px', color: '#00ffcc', fontWeight: 'bold' }}>
