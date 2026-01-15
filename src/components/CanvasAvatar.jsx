@@ -1,5 +1,3 @@
-
-//TRY - 15
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useGLTF, OrbitControls, Environment, Html } from "@react-three/drei";
 import * as THREE from "three";
@@ -8,6 +6,7 @@ import useLandmarks from "../hooks/useLandmarks";
 import { createFilteredLandmarks } from "../utils/smoothing";
 import { ALPHABET_POSES, applySignPose } from "../utils/signAnimations";
 import socketService from "../services/socketService";
+import { io } from "socket.io-client";
 import "../../src/App.css";
 import Caption from "./Caption";
 
@@ -433,7 +432,20 @@ function LandmarkDebugViewer({ landmarks }) {
 
 
 export default function CanvasAvatar() {
-  const { landmarks, sign, sentence } = useLandmarks();
+  const { landmarks: remoteLandmarks, sign: remoteSign, sentence: remoteSentence } = useLandmarks();
+  const [localLandmarks, setLocalLandmarks] = useState(null);
+  const [localSign, setLocalSign] = useState(null);
+  const [localSentence, setLocalSentence] = useState("");
+
+  // Smoothing state for landmarks
+  const landmarkHistory = useRef({ left: [], right: [], pose: [] });
+  const SMOOTHING_WINDOW = 3;
+
+  const videoRef = useRef(null);
+  const holisticRef = useRef(null);
+  const pythonSocketRef = useRef(null);
+  const [isCapturing, setIsCapturing] = useState(false);
+  const [isPythonConnected, setIsPythonConnected] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState("disconnected");
   const [showControls, setShowControls] = useState(true);
   const [showDebug, setShowDebug] = useState(false);
@@ -444,10 +456,160 @@ export default function CanvasAvatar() {
   const [currentPlaybackChar, setCurrentPlaybackChar] = useState(null);
   const [isTrackingActive, setIsTrackingActive] = useState(false);
 
+  // Python Prediction Server Connection
+  useEffect(() => {
+    const SIGN_URL = import.meta.env.VITE_SIGN_PREDICT_URL || 'http://localhost:7001';
+    console.log("🔌 Connecting to Python Prediction Server at:", SIGN_URL);
+
+    const socket = io(SIGN_URL);
+
+    socket.on('connect', () => {
+      console.log('✅ Connected to Python Prediction Server');
+      setIsPythonConnected(true);
+    });
+
+    socket.on('disconnect', () => {
+      console.log('🔴 Disconnected from Python Prediction Server');
+      setIsPythonConnected(false);
+    });
+
+    socket.on('landmarks_processed', (data) => {
+      // console.log("🧠 Processed landmarks received from Python");
+      setLocalLandmarks(data);
+      if (data.sign_language) {
+        setLocalSign(data.sign_language);
+        setLocalSentence(data.sign_language.sentence);
+      }
+
+      // Sync with other components (like Caption.js)
+      socketService.emitEvent('landmarks', data);
+      if (data.sign_language) {
+        socketService.emitEvent('sign', data.sign_language);
+      }
+    });
+
+    pythonSocketRef.current = socket;
+    return () => socket.disconnect();
+  }, []);
+
+  // MediaPipe Holistic Setup
+  useEffect(() => {
+    if (!window.Holistic) {
+      console.error("❌ MediaPipe Holistic not found in window");
+      return;
+    }
+
+    const holistic = new window.Holistic({
+      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`
+    });
+
+    holistic.setOptions({
+      modelComplexity: 1, // 1 for balance, 2 for higher precision
+      smoothLandmarks: true,
+      minDetectionConfidence: 0.5,
+      minTrackingConfidence: 0.5,
+      refineFaceLandmarks: false
+    });
+
+    const smooth = (landmarks, historyKey) => {
+      if (!landmarks) return null;
+      const history = landmarkHistory.current[historyKey];
+      history.push(landmarks);
+      if (history.length > SMOOTHING_WINDOW) history.shift();
+
+      const averaged = landmarks.map((lm, i) => {
+        let x = 0, y = 0, z = 0;
+        history.forEach(h => {
+          x += h[i].x;
+          y += h[i].y;
+          z += h[i].z;
+        });
+        return { x: x / history.length, y: y / history.length, z: z / history.length };
+      });
+      return averaged;
+    };
+
+    holistic.onResults((results) => {
+      if (!isCapturing) return;
+
+      const data = {
+        pose: {},
+        left_hand: {},
+        right_hand: {},
+        timestamp: Date.now()
+      };
+
+      if (results.poseLandmarks) {
+        results.poseLandmarks.forEach((lm, i) => {
+          data.pose[i] = { x: lm.x, y: lm.y, z: lm.z };
+        });
+      }
+
+      const smoothedLeft = smooth(results.leftHandLandmarks, 'left');
+      if (smoothedLeft) {
+        smoothedLeft.forEach((lm, i) => {
+          data.left_hand[i] = { x: lm.x, y: lm.y, z: lm.z };
+        });
+      }
+
+      const smoothedRight = smooth(results.rightHandLandmarks, 'right');
+      if (smoothedRight) {
+        smoothedRight.forEach((lm, i) => {
+          data.right_hand[i] = { x: lm.x, y: lm.y, z: lm.z };
+        });
+      }
+
+      // Send to Python for prediction
+      if (pythonSocketRef.current?.connected && (smoothedLeft || smoothedRight)) {
+        pythonSocketRef.current.emit('process_landmarks', data);
+      } else {
+        setLocalLandmarks(data);
+      }
+    });
+
+    holisticRef.current = holistic;
+  }, [isCapturing]);
+
+  // Camera Management
+  const startCamera = async () => {
+    if (!videoRef.current) return;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } });
+      videoRef.current.srcObject = stream;
+      setIsCapturing(true);
+
+      const camera = new window.Camera(videoRef.current, {
+        onFrame: async () => {
+          if (holisticRef.current) {
+            await holisticRef.current.send({ image: videoRef.current });
+          }
+        },
+        width: 640,
+        height: 480
+      });
+      camera.start();
+    } catch (err) {
+      console.error("❌ Camera error:", err);
+    }
+  };
+
+  const stopCamera = () => {
+    if (videoRef.current?.srcObject) {
+      videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+      videoRef.current.srcObject = null;
+    }
+    setIsCapturing(false);
+  };
+
+  // Switch between remote (Python capture) and local (Browser capture)
+  const activeLandmarks = isCapturing ? localLandmarks : remoteLandmarks;
+  const activeSign = isCapturing ? localSign : remoteSign;
+  const activeSentence = isCapturing ? localSentence : remoteSentence;
+
   useEffect(() => {
     const checkSocket = () => {
       const isConnected = socketService.isConnected();
-      if (landmarks && isTrackingActive) {
+      if (activeLandmarks && isTrackingActive) {
         setConnectionStatus("connected");
       } else if (isConnected) {
         setConnectionStatus(isTrackingActive ? "waiting_for_data" : "paused");
@@ -459,9 +621,9 @@ export default function CanvasAvatar() {
     checkSocket();
     const timer = setInterval(checkSocket, 2000); // Poll connection status
 
-    if (landmarks && landmarks.pose && isTrackingActive) {
+    if (activeLandmarks && activeLandmarks.pose && isTrackingActive) {
       // Estimate tracking quality based on visible landmarks
-      const visiblePoints = Object.values(landmarks.pose).filter(p => p).length;
+      const visiblePoints = Object.values(activeLandmarks.pose).filter(p => p).length;
       if (visiblePoints < 10) setTrackingQuality("Poor");
       else if (visiblePoints < 20) setTrackingQuality("Fair");
       else setTrackingQuality("Good");
@@ -472,7 +634,7 @@ export default function CanvasAvatar() {
     }
 
     return () => clearInterval(timer);
-  }, [landmarks]);
+  }, [activeLandmarks, isTrackingActive]);
 
   // Listen for new messages for Text-to-Sign
   useEffect(() => {
@@ -539,9 +701,9 @@ export default function CanvasAvatar() {
         }} />
         <div style={{ minWidth: 0 }}>
 
-          {connectionStatus === 'connected' && landmarks && (
+          {connectionStatus === 'connected' && activeLandmarks && (
             <div style={{ fontSize: 'clamp(10px, 1vw, 13px)', marginTop: '2px', opacity: 0.8 }}>
-              Points: {Object.keys(landmarks.pose || {}).length} | Quality: <span style={{
+              Points: {Object.keys(activeLandmarks.pose || {}).length} | Quality: <span style={{
                 color: trackingQuality === 'Good' ? '#00ff64' :
                   trackingQuality === 'Fair' ? '#ffaa00' : '#ff4444'
               }}>{trackingQuality}</span>
@@ -549,7 +711,7 @@ export default function CanvasAvatar() {
           )}
           {connectionStatus === 'waiting_for_data' && (
             <div style={{ fontSize: 'clamp(10px, 1vw, 13px)', marginTop: '2px', opacity: 0.8 }}>
-              Socket OK. Please start capture script.
+              {isCapturing ? "Processing local capture..." : "Socket OK. Use Local Cam or External Script."}
             </div>
           )}
 
@@ -562,8 +724,18 @@ export default function CanvasAvatar() {
         </div>
       </div>
 
+      {/* Hidden Video for MediaPipe */}
+      <video
+        ref={videoRef}
+        style={{ display: 'none' }}
+        width="640"
+        height="480"
+        autoPlay
+        playsInline
+      />
+
       {/* Predicted Sentence Overlay */}
-      {sentence && connectionStatus === 'connected' && (
+      {activeSentence && connectionStatus === 'connected' && (
         <div style={{
           position: 'absolute',
           top: '20px',
@@ -583,13 +755,13 @@ export default function CanvasAvatar() {
         }}>
           <div style={{ fontSize: '12px', color: '#888', marginBottom: '8px', letterSpacing: '1px' }}>PREDICTED SENTENCE</div>
           <div style={{ fontSize: 'clamp(18px, 2vw, 28px)', fontWeight: 'bold', color: '#00ff88', lineHeight: 1.4, wordBreak: 'break-word' }}>
-            {sentence || "..."}
+            {activeSentence || "..."}
           </div>
         </div>
       )}
 
       {/* Predicted Sign Overlay (Case 1) */}
-      {sign && connectionStatus === 'connected' && sign.letter !== 'nothing' && (
+      {activeSign && connectionStatus === 'connected' && activeSign.letter && activeSign.letter !== 'nothing' && (
         <div style={{
           position: 'absolute',
           bottom: '120px',
@@ -607,10 +779,10 @@ export default function CanvasAvatar() {
         }}>
           <div style={{ fontSize: '12px', color: '#888', marginBottom: '5px' }}>DETECTED SIGN</div>
           <div style={{ fontSize: '64px', fontWeight: 'bold', color: '#00ffcc', lineHeight: 1 }}>
-            {sign.letter}
+            {activeSign.letter}
           </div>
           <div style={{ fontSize: '14px', color: '#aaa', marginTop: '5px' }}>
-            {(sign.confidence * 100).toFixed(0)}% confidence
+            {(activeSign.confidence * 100).toFixed(0)}% confidence
           </div>
         </div>
       )}
@@ -672,8 +844,10 @@ export default function CanvasAvatar() {
             const nextState = !isTrackingActive;
             setIsTrackingActive(nextState);
             if (nextState) {
+              startCamera();
               socketService.startTracking();
             } else {
+              stopCamera();
               socketService.stopTracking();
             }
           }}
@@ -812,13 +986,13 @@ export default function CanvasAvatar() {
             </div>
           </Html>
         }>
-          {(landmarks && isTrackingActive) || currentPlaybackChar ? (
+          {(activeLandmarks && isTrackingActive) || currentPlaybackChar ? (
             <>
               <LiveAvatar
-                landmarks={isTrackingActive ? landmarks : null}
+                landmarks={isTrackingActive ? activeLandmarks : null}
                 playbackChar={currentPlaybackChar}
               />
-              {showDebug && landmarks && isTrackingActive && <LandmarkDebugViewer landmarks={landmarks} />}
+              {showDebug && activeLandmarks && isTrackingActive && <LandmarkDebugViewer landmarks={activeLandmarks} />}
             </>
           ) : (
             <IdleAvatar />
