@@ -1,57 +1,3 @@
-// import { useEffect, useState } from "react";
-// import socket from "../socket";
-
-// export default function useLandmarks() {
-//   const [data, setData] = useState(null);
-
-//   useEffect(() => {
-//     const handler = (incoming) => {
-//       setData({
-//         ...incoming,
-//         pose: { ...incoming.pose },
-//         left_hand: { ...incoming.left_hand },
-//         right_hand: { ...incoming.right_hand },
-//       });
-//     };
-
-//     socket.on("landmarks", handler);
-//     return () => socket.off("landmarks", handler);
-//   }, []);
-
-//   return data;
-// }
-
-
-
-
-// import { useEffect, useState } from "react";
-// import socket from "../socket";
-
-// export default function useLandmarks() {
-//   const [data, setData] = useState(null);
-
-//   useEffect(() => {
-//     const handler = (incoming) => {
-//       setData({
-//         ...incoming,
-//         pose: { ...incoming.pose },
-//         left_hand: { ...incoming.left_hand },
-//         right_hand: { ...incoming.right_hand },
-//       });
-//     };
-
-//     socket.on("landmarks", handler);
-//     return () => socket.off("landmarks", handler);
-//   }, []);
-
-//   return data;
-// }
-
-
-
-
-
-
 
 // hooks/useLandmarks.js
 import { useState, useEffect } from 'react';
@@ -73,16 +19,24 @@ export default function useLandmarks() {
     }
 
     const handleLandmarks = (data) => {
-      // console.log("📍 Landmark arrived in hook");
+      // console.log("📍 Landmark arrived in hook:", data?.timestamp);
       setLandmarks(data);
-      if (data?.sign_language?.letter && data.sign_language.letter !== 'nothing') {
-        console.log("📡 Sign received:", data.sign_language.letter, "Conf:", data.sign_language.confidence);
-        setSign(data.sign_language);
-      }
-      // Update sentence if available
-      if (data?.sign_language?.sentence !== undefined) {
-        console.log("💬 Sentence received:", data.sign_language.sentence);
-        setSentence(data.sign_language.sentence);
+
+      // Update sign and sentence from the unified landmarks event
+      if (data?.sign_language) {
+        const sl = data.sign_language;
+
+        // Update sign state (including 'nothing')
+        if (sl.letter !== undefined) {
+          // console.log("🖖 Hook Sign:", sl.letter, sl.confidence);
+          setSign(sl);
+        }
+
+        // Update sentence if available
+        if (sl.sentence !== undefined) {
+          // console.log("💬 Hook Sentence:", sl.sentence);
+          setSentence(sl.sentence);
+        }
       }
     };
 
