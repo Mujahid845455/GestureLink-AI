@@ -6,7 +6,8 @@ import { addMessage, updateMessageStatus } from '../store/slices/chatSlice';
 
 class SocketService {
   constructor() {
-    this.socket = null;
+    this.mainSocket = null;
+    this.aiSocket = null;
     this.token = null;
     this.listeners = new Map();
   }
@@ -15,47 +16,57 @@ class SocketService {
     if (!token) return;
     this.token = token;
 
-    if (this.socket?.connected) {
-      return;
+    // URLs from environment variables
+    const MAIN_BACKEND_URL = import.meta.env.VITE_SOCKET_URL || "https://gesturelink-ai-backend.onrender.com";
+    const AI_BACKEND_URL = import.meta.env.VITE_AI_SOCKET_URL || "https://capture-and-send-backend.onrender.com";
+
+    // 1. Connect to Main Backend (Chat, Auth)
+    if (!this.mainSocket?.connected) {
+      console.log(`🔌 Connecting to Main Backend: ${MAIN_BACKEND_URL}`);
+      this.mainSocket = io(MAIN_BACKEND_URL, {
+        transports: ["websocket"],
+        auth: { token },
+        reconnection: true,
+        reconnectionAttempts: 10,
+        reconnectionDelay: 2000,
+      });
+      this.setupMainListeners();
     }
 
-    const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://capture-and-send-backend.onrender.com";
-
-    console.log(`🔌 Connecting to Socket server: ${SOCKET_URL}`);
-
-    this.socket = io(SOCKET_URL, {
-      transports: ["websocket"],
-      auth: { token },
-      reconnection: true,
-      reconnectionAttempts: 10,
-      reconnectionDelay: 2000,
-    });
-
-    this.setupListeners();
+    // 2. Connect to AI Backend (Prediction)
+    if (!this.aiSocket?.connected) {
+      console.log(`🧠 Connecting to AI Prediction Backend: ${AI_BACKEND_URL}`);
+      this.aiSocket = io(AI_BACKEND_URL, {
+        transports: ["websocket"],
+        // auth: { token }, // AI backend might not need auth token or uses a different one
+        reconnection: true,
+        reconnectionAttempts: 10,
+        reconnectionDelay: 2000,
+      });
+      this.setupAIListeners();
+    }
   }
 
-  setupListeners() {
-    if (!this.socket) return;
+  setupMainListeners() {
+    if (!this.mainSocket) return;
 
-    this.socket.on("connect", () => {
-      console.log("✅ Socket connected:", this.socket.id);
-      this.emitEvent('connect', this.socket.id);
+    this.mainSocket.on("connect", () => {
+      console.log("✅ Main Backend connected:", this.mainSocket.id);
+      this.emitEvent('connect', this.mainSocket.id);
     });
 
-    this.socket.on("disconnect", (reason) => {
-      console.log("❌ Socket disconnected:", reason);
+    this.mainSocket.on("disconnect", (reason) => {
+      console.log("❌ Main Backend disconnected:", reason);
       this.emitEvent('disconnect', reason);
     });
 
-    this.socket.on("connect_error", (err) => {
-      console.error("🔌 Socket connection error:", err.message);
+    this.mainSocket.on("connect_error", (err) => {
+      console.error("🔌 Main Backend error:", err.message);
       this.emitEvent('connect_error', err);
     });
 
-    // Listen for new messages
-    this.socket.on("new_message", (message) => {
-      console.log("📨 New message received:", message);
-
+    this.mainSocket.on("new_message", (message) => {
+      console.log("📨 New message from Main:", message);
       const state = store.getState();
       const existingTempMessage = state.chat.messages.find(
         msg => (msg.status === 'sending' || msg.id?.toString().startsWith('temp_')) &&
@@ -65,189 +76,116 @@ class SocketService {
       if (existingTempMessage) {
         store.dispatch({
           type: 'chat/updateMessage',
-          payload: {
-            tempId: existingTempMessage.tempId || existingTempMessage.id,
-            message: message
-          }
+          payload: { tempId: existingTempMessage.tempId || existingTempMessage.id, message }
         });
       } else {
         store.dispatch(addMessage(message));
       }
-
       this.emitEvent('new_message', message);
     });
 
-    // Listen for message status updates
-    this.socket.on("message_status", (data) => {
-      console.log("📊 Message status:", data);
+    this.mainSocket.on("message_status", (data) => {
       if (data.messageId && data.status) {
-        store.dispatch(updateMessageStatus({
-          messageId: data.messageId,
-          status: data.status
-        }));
+        store.dispatch(updateMessageStatus({ messageId: data.messageId, status: data.status }));
       }
       this.emitEvent('message_status', data);
     });
 
-    // Listen for typing indicators
-    this.socket.on("user_typing", (data) => {
-      console.log("⌨️ User typing:", data);
-      this.emitEvent('typing', data);
+    this.mainSocket.on("user_typing", (data) => this.emitEvent('typing', data));
+    this.mainSocket.on("user_online", (userId) => this.emitEvent('user_online', userId));
+    this.mainSocket.on("user_offline", (userId) => this.emitEvent('user_offline', userId));
+  }
+
+  setupAIListeners() {
+    if (!this.aiSocket) return;
+
+    this.aiSocket.on("connect", () => {
+      console.log("✅ AI Backend connected:", this.aiSocket.id);
     });
 
-    // Listen for user online status
-    this.socket.on("user_online", (userId) => {
-      console.log("🟢 User online:", userId);
-      this.emitEvent('user_online', userId);
+    this.aiSocket.on("disconnect", (reason) => {
+      console.log("❌ AI Backend disconnected:", reason);
     });
 
-    this.socket.on("user_offline", (userId) => {
-      console.log("🔴 User offline:", userId);
-      this.emitEvent('user_offline', userId);
+    this.aiSocket.on("connect_error", (err) => {
+      console.error("🔌 AI Backend error:", err.message);
     });
 
-    // Listen for landmarks (Real-time AI data)
-    this.socket.on("landmarks", (data) => {
-      // console.log("📡 Landmarks received"); // Too noisy for production
+    // Capture landmarks from AI Backend
+    this.aiSocket.on("landmarks_processed", (data) => {
+      // console.log("📡 Landmarks from AI Server");
       this.emitEvent('landmarks', data);
     });
 
-    // Listen for sign detection
-    this.socket.on("sign", (data) => {
-      console.log("🖖 Sign detected:", data);
+    this.aiSocket.on("sign", (data) => {
+      console.log("🖖 Sign from AI Server:", data);
       this.emitEvent('sign', data);
     });
   }
 
-  // Specific event subscriptors used by components
-  onConnect(callback) {
-    return this.on('connect', callback);
-  }
-
-  onNewMessage(callback) {
-    return this.on('new_message', callback);
-  }
-
-  onTyping(callback) {
-    return this.on('typing', callback);
-  }
-
-  onUserOnline(callback) {
-    return this.on('user_online', callback);
-  }
-
-  onUserOffline(callback) {
-    return this.on('user_offline', callback);
-  }
-
-  onLandmarks(callback) {
-    return this.on('landmarks', callback);
-  }
-
-  onSign(callback) {
-    return this.on('sign', callback);
-  }
-
-  // Event emitter helper
-  emitEvent(event, data) {
-    if (this.listeners.has(event)) {
-      this.listeners.get(event).forEach(callback => {
-        try {
-          callback(data);
-        } catch (err) {
-          console.error(`Error in ${event} callback:`, err);
-        }
-      });
-    }
-  }
-
-  // Subscribe to events
+  // Event Subscription Logic
   on(event, callback) {
     if (!this.listeners.has(event)) {
       this.listeners.set(event, []);
     }
     this.listeners.get(event).push(callback);
-
-    // Return unsubscribe function
     return () => this.off(event, callback);
   }
 
-  // Unsubscribe from events
   off(event, callback) {
     if (this.listeners.has(event)) {
       const callbacks = this.listeners.get(event);
       const index = callbacks.indexOf(callback);
-      if (index > -1) {
-        callbacks.splice(index, 1);
-      }
+      if (index > -1) callbacks.splice(index, 1);
     }
   }
 
-  // Join a conversation room
-  joinConversation(conversationId) {
-    if (this.socket?.connected) {
-      console.log(`Joining conversation: ${conversationId}`);
-      this.socket.emit("join_conversation", conversationId);
-    }
-  }
-
-  // Leave a conversation room
-  leaveConversation(conversationId) {
-    if (this.socket?.connected) {
-      console.log(`Leaving conversation: ${conversationId}`);
-      this.socket.emit("leave_conversation", conversationId);
-    }
-  }
-
-  // Send a message
-  sendMessage(messageData) {
-    if (this.socket?.connected) {
-      this.socket.emit("send_message", messageData);
-    }
-  }
-
-  // Send typing indicator
-  sendTyping(conversationId, isTyping) {
-    if (this.socket?.connected) {
-      this.socket.emit("typing", {
-        conversationId,
-        isTyping
+  emitEvent(event, data) {
+    if (this.listeners.has(event)) {
+      this.listeners.get(event).forEach(callback => {
+        try { callback(data); } catch (err) { console.error(`Error in ${event} callback:`, err); }
       });
     }
   }
 
-  // Mark message as read
-  markAsRead(messageId, conversationId) {
-    if (this.socket?.connected) {
-      this.socket.emit("mark_read", { messageId, conversationId });
-    }
-  }
+  // Wrapper Methods for Components
+  onConnect(cb) { return this.on('connect', cb); }
+  onNewMessage(cb) { return this.on('new_message', cb); }
+  onTyping(cb) { return this.on('typing', cb); }
+  onUserOnline(cb) { return this.on('user_online', cb); }
+  onUserOffline(cb) { return this.on('user_offline', cb); }
+  onLandmarks(cb) { return this.on('landmarks', cb); }
+  onSign(cb) { return this.on('sign', cb); }
 
+  // Socket Actions
+  sendMessage(data) { this.mainSocket?.emit("send_message", data); }
+  joinConversation(id) { this.mainSocket?.emit("join_conversation", id); }
+  leaveConversation(id) { this.mainSocket?.emit("leave_conversation", id); }
+  sendTyping(id, isTyping) { this.mainSocket?.emit("typing", { conversationId: id, isTyping }); }
+  markAsRead(msgId, convId) { this.mainSocket?.emit("mark_read", { messageId: msgId, conversationId: convId }); }
+
+  // AI Specific Actions
   startTracking() {
-    if (this.socket?.connected) {
-      console.log("📤 Sending start_tracking signal");
-      this.socket.emit("start_tracking");
-    }
+    console.log("📤 Sending start_tracking to AI Server");
+    this.aiSocket?.emit("start_tracking");
   }
 
   stopTracking() {
-    if (this.socket?.connected) {
-      console.log("📤 Sending stop_tracking signal");
-      this.socket.emit("stop_tracking");
-    }
+    console.log("📤 Sending stop_tracking to AI Server");
+    this.aiSocket?.emit("stop_tracking");
   }
 
   isConnected() {
-    return this.socket?.connected || false;
+    return this.mainSocket?.connected || false;
   }
 
   disconnect() {
-    if (this.socket) {
-      this.socket.disconnect();
-      this.socket = null;
-      this.listeners.clear();
-      console.log("Socket disconnected");
-    }
+    this.mainSocket?.disconnect();
+    this.aiSocket?.disconnect();
+    this.mainSocket = null;
+    this.aiSocket = null;
+    this.listeners.clear();
+    console.log("All sockets disconnected");
   }
 }
 
