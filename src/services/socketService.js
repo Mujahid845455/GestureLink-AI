@@ -1,3 +1,4 @@
+
 // src/services/socketService.js
 import { io } from "socket.io-client";
 import { store } from '../store/store';
@@ -18,12 +19,16 @@ class SocketService {
       return;
     }
 
-    this.socket = io(import.meta.env.VITE_SOCKET_URL || "http://localhost:7000", {
+    const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://capture-and-send-backend.onrender.com";
+
+    console.log(`🔌 Connecting to Socket server: ${SOCKET_URL}`);
+
+    this.socket = io(SOCKET_URL, {
       transports: ["websocket"],
       auth: { token },
       reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 2000,
     });
 
     this.setupListeners();
