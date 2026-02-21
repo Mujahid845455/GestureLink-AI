@@ -17,12 +17,11 @@ class SocketService {
     this.token = token;
 
     // URLs from environment variables
-    const MAIN_BACKEND_URL = import.meta.env.VITE_SOCKET_URL || "https://gesturelink-ai-backend.onrender.com";
-    const AI_BACKEND_URL = import.meta.env.VITE_AI_SOCKET_URL || "https://capture-and-send-backend.onrender.com";
-
+    const MAIN_BACKEND_URL = import.meta.env.VITE_SOCKET_URL ;
+    const AI_BACKEND_URL = import.meta.env.VITE_AI_SOCKET_URL ;
     // 1. Connect to Main Backend (Chat, Auth)
     if (!this.mainSocket?.connected) {
-      console.log(`🔌 Connecting to Main Backend: ${MAIN_BACKEND_URL}`);
+      console.log(`🔌 Connecting to Main Backend`);
       this.mainSocket = io(MAIN_BACKEND_URL, {
         transports: ["websocket"],
         auth: { token },
@@ -35,7 +34,7 @@ class SocketService {
 
     // 2. Connect to AI Backend (Prediction)
     if (!this.aiSocket?.connected) {
-      console.log(`🧠 Connecting to AI Prediction Backend: ${AI_BACKEND_URL}`);
+      console.log(`🧠 Connecting to AI Prediction Backend`);
       this.aiSocket = io(AI_BACKEND_URL, {
         transports: ["websocket"],
         // auth: { token }, // AI backend might not need auth token or uses a different one
